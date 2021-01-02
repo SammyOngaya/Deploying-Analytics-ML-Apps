@@ -4,6 +4,7 @@ import pandas as pd
 
 
 import plotly.graph_objs as go
+import plotly.express as px
 import plotly
 # import plotly.offline as plt
 
@@ -30,8 +31,9 @@ def titanic():
 	gender_fare_fig_json = json.dumps(gender_fare_fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 	# Gender Passenger Count
-	df_gender_count=pd.DataFrame(df.groupby(['Sex'],as_index=False)['Fare'].count())
+	df_gender_count=pd.DataFrame(df.groupby(['Sex','Pclass'],as_index=False)['Fare'].count())
 	gender_count_trace = go.Bar(x=df_gender_count["Sex"], y=df_gender_count["Fare"])
+
 	gender_count_layout = go.Layout(title="Gender Count", xaxis=dict(title="Gender"),
                        yaxis=dict(title="No."), )
 	gender_count_data = [gender_count_trace]
