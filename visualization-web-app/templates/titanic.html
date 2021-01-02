@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Plotly Dashboard</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	
+</head>
+<body>
+<h1>Hello Plotly.js</h1>
+
+<div class="row row-cols-1">
+  <div class="col" id="gender_fare_chart" style="width:650px;height:450px; float: left;">
+    <script>
+        var gender_fare_fig = {{gender_fare_plot | safe}};
+        Plotly.plot('gender_fare_chart',gender_fare_fig.data,gender_fare_fig.layout,{displaylogo: false});
+    </script>
+</div>
+  <div class="col" id="gender_count_chart" style="width:650px;height:450px; float: right;">
+       <script>
+        var gender_count_fig = {{gender_count_plot | safe}};
+        Plotly.plot('gender_count_chart',gender_count_fig.data,gender_count_fig.layout,{displaylogo: false});
+    </script>
+  </div>
+</div>
+
+
+
+
+</body>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+</html>

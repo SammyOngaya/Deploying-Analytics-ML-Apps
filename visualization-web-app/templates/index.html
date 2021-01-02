@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Plotly Dashboard</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	
+</head>
+<body>
+<h1>Hello Plotly.js</h1>
+
+<div class="row row-cols-1">
+  <div class="col" id="tester" style="width:650px;height:250px; float: left;"></div>
+  <div class="col" id="chart" style="width:650px;height:250px; float: right;"></div>
+</div>
+
+<div class="chart" id="barchart">
+<script>
+        var fig = {{plot | safe}};
+        Plotly.plot('barchart',fig.data,fig.layout,{displaylogo: false});
+    </script>
+</div>
+
+
+</body>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script>
+
+//  First chart
+	TESTER = document.getElementById('tester');
+	Plotly.newPlot(TESTER, [{
+	x: [1, 2, 3, 4, 5],
+	y: [1, 2, 4, 8, 16] }], {
+	margin: { t: 0 } } );
+
+// Second chart
+	function getData() {
+                return Math.random();
+            }  
+            Plotly.plot('chart',[{
+                y:[getData()],
+                type:'line'
+            }]);
+            
+            var cnt = 0;
+            setInterval(function(){
+                Plotly.extendTraces('chart',{ y:[[getData()]]}, [0]);
+                cnt++;
+                if(cnt > 500) {
+                    Plotly.relayout('chart',{
+                        xaxis: {
+                            range: [cnt-500,cnt]
+                        }
+                    });
+                }
+            },15);
+</script>
+
+
+
+</html>
