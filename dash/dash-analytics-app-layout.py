@@ -25,26 +25,29 @@ app.layout=dbc.Container([
 	#body
 	 html.Div(
     [
-        dbc.Row(
+
+      dbc.Row(
             [
-                dbc.Col(html.Div("One of three columns"), md=4),
-                dbc.Col(html.Div("One of three columns"), md=4),
-                dbc.Col(html.Div("One of three columns"), md=4),
+                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
+                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
+                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
+                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
             ]
         ),
+
         dbc.Row(
             [
-                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
-                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
-                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
-                dbc.Col(html.Div("One of four columns"), width=6, lg=3),
+                dbc.Col(html.Div("One of three columns"), md=4),
+                dbc.Col(html.Div("One of three columns"), md=4),
+                dbc.Col(html.Div("One of three columns"), md=4),
             ]
         ),
     ]
 )
 	#end body
 
-	]
+	],
+	fluid=True
 	)
 
 if __name__ == "__main__":
