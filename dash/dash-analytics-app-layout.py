@@ -1,6 +1,23 @@
 import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
+import dash_core_components as dcc
+import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
+
+
+# Load data
+df = pd.DataFrame({
+    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
+    "Amount": [4, 1, 2, 2, 4, 5],
+    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
+})
+# 
+
+# dash visualizations
+grouped_barchart=px.bar(df,x='Fruit',y='Amount',color='City',barmode='group',text='Amount')
+grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True)
 
 app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP]
@@ -69,11 +86,11 @@ app.layout=dbc.Container([
 	# navigation
 	dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Tweeter Analysis", active=True,href="#")),
+        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True,href="#")),
+        dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=True,href="#")),
         dbc.NavItem(dbc.NavLink("Temperature Analysis", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Titanic Analysis", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Iris Analysis", active=True,href="#"))
-    ],
+        dbc.NavItem(dbc.NavLink("Titanic Analysis", active=True,href="#"))
+    ], 
     brand="Galaxy Analytics Dashbords",
     brand_href="#",
     color="primary",
@@ -86,6 +103,7 @@ app.layout=dbc.Container([
 	 html.Div(
     [
 
+    # Performance Tiles
        dbc.Row(
             [
                 dbc.Col(dbc.Card(card_content1, color="primary", inverse=True)),
@@ -99,17 +117,25 @@ app.layout=dbc.Container([
 
         ),
 
+    # Graphs
         dbc.Row(
             [
-                dbc.Col(html.Div("One of three columns"
+                dbc.Col(html.Div(
+                	  dcc.Graph(
+		    id='grouped-bar-graph',
+		    figure=grouped_barchart,
+		    config={'displayModeBar': False },
+		    style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
+		    )
                 	),
 			style={
             'margin-top': '2px',
-            'height': '215px',
+            'height': '300px',
             'backgroundColor': 'rgba(120,0,0,0.4)'
             },
                 	md=4),
-                dbc.Col(html.Div("One of three columns")
+            
+            dbc.Col(html.Div("One of three columns")
                ,
 			style={
             'margin-top': '2px',
