@@ -16,7 +16,8 @@ card_content1 = [
                 "This is some card content that we'll reuse",
                 className="card-text",
             ),
-        ]
+        ],
+        style={'height': '75px',}
     ),
 ]
 
@@ -29,7 +30,8 @@ card_content2 = [
                 "This is some card content that we'll reuse",
                 className="card-text",
             ),
-        ]
+        ],
+        style={'height': '75px',}
     ),
 ]
 
@@ -42,7 +44,8 @@ card_content3 = [
                 "This is some card content that we'll reuse",
                 className="card-text",
             ),
-        ]
+        ],
+        style={'height': '75px'}
     ),
 ]
 
@@ -55,7 +58,8 @@ card_content4 = [
                 "This is some card content that we'll reuse",
                 className="card-text",
             ),
-        ]
+        ],
+        style={'height': '75px'}
     ),
 ]
 #end card definition
@@ -91,33 +95,102 @@ app.layout=dbc.Container([
                 dbc.Col(dbc.Card(card_content3, color="info", inverse=True)),
                 dbc.Col(dbc.Card(card_content4, color="success", inverse=True)),
             ],
-            className="mb-3",
+            className="mb-3"
+
         ),
 
         dbc.Row(
             [
-                dbc.Col(html.Div("One of three columns"), md=4),
-                dbc.Col(html.Div("One of three columns"), md=4),
-                dbc.Col(html.Div("One of three columns"), md=4),
+                dbc.Col(html.Div("One of three columns"
+                	),
+			style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(120,0,0,0.4)'
+            },
+                	md=4),
+                dbc.Col(html.Div("One of three columns")
+               ,
+			style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(0,120,0,0.4)'
+            },
+             md=4),
+                dbc.Col(html.Div("One of three columns")
+
+                ,
+			style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(0,0,98,0.4)'
+            },
+             md=4),
             ]
         ),
 
         dbc.Row(
             [
-                dbc.Col(html.Div("One of three columns"), md=9),
-                dbc.Col(html.Div("One of three columns"), md=3),
+                dbc.Col(html.Div("One of three columns")
+                	    ,
+			style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(120,120,0,110)'
+            },
+                 md=9),
+                dbc.Col(html.Div("One of three columns")
+                    ,
+			style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(120,105,73,0.2)'
+            }, md=3),
                 # dbc.Col(html.Div("One of three columns"), md=4),
             ]
         ),
 
         dbc.Row(
             [
-                dbc.Col(html.Div("One of three columns"), md=4),
-                dbc.Col(html.Div("One of three columns"), md=4),
-                dbc.Col(html.Div("One of three columns"), md=4),
+                dbc.Col(html.Div("One of three columns"),
+                	style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(120,10,73,0.2)'
+            },
+                 md=4),
+                dbc.Col(html.Div("One of three columns"),
+                style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(120,60,90,0.2)'
+            }, md=4),
+                dbc.Col(html.Div("One of three columns"),
+                style={
+            'margin-top': '2px',
+            'height': '215px',
+            'backgroundColor': 'rgba(0.4,120,40,0.4)'
+            }, md=4),
             ]
         ),
-    ]
+
+        # footer
+ 		dbc.Row(
+            [
+                dbc.Col(html.Div("footer"),
+                	style={
+            'margin-top': '2px',
+            'backgroundColor': 'rgba(120,120,120,0.2)'
+            },
+                 md=12)
+            ]
+        ),
+        #end footer
+    ],
+        style={
+            'padding-left': '5px',
+            'padding-right': '5px'
+            },
 )
 	#end body
 
