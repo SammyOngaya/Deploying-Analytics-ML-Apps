@@ -27,36 +27,44 @@ grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x
 barchart=px.bar(df_fruit,x='Fruit',y='Amount',text='Amount',color='Amount')
 barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True, xaxis={'categoryorder':'category descending'})
 
+# donought pie chart with text at center
+doughnut_pie_chart_with_center = go.Figure(data=[go.Pie(labels=df['Fruit'].tolist(), values=df['Amount'].tolist(), hole=.3)])
+doughnut_pie_chart_with_center.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,title_text="Fruit Prices",
+    annotations=[dict(text='Fruits',  font_size=20, showarrow=False)])
+
+fruit_amount=df['Amount'].sum()
+fruit_quantity=df['Fruit'].count()
+
 app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
 
 # card definition
 card_content1 = [
-    dbc.CardHeader("Card header"),
+    dbc.CardHeader("Amount",style={'text-align': 'center'}),
     dbc.CardBody(
         [
-            html.H5("Card title", className="card-title"),
-            html.P(
-                "This is some card content that we'll reuse",
-                className="card-text",
-            ),
+            html.H1(fruit_amount, className="card-title"),
+            # html.P(
+            #     "",
+            #     className="card-text",
+            # ),
         ],
-        style={'height': '75px',}
+        style={'text-align': 'center'}
     ),
 ]
 
 card_content2 = [
-    dbc.CardHeader("Card header"),
+    dbc.CardHeader("Quantity"),
     dbc.CardBody(
         [
-            html.H5("Card title", className="card-title"),
-            html.P(
-                "This is some card content that we'll reuse",
-                className="card-text",
-            ),
+            html.H1(fruit_quantity, className="card-title"),
+            # html.P(
+            #     "",
+            #     className="card-text",
+            # ),
         ],
-        style={'height': '75px',}
+        style={'text-align': 'center'}
     ),
 ]
 
@@ -144,7 +152,8 @@ app.layout=dbc.Container([
             },
                 	md=4),
    #2.
-            dbc.Col(html.Div(dcc.Graph(
+            dbc.Col(html.Div(
+            	dcc.Graph(
 		    id='barchart',
 		    figure=barchart,
 		    config={'displayModeBar': False },
@@ -157,16 +166,22 @@ app.layout=dbc.Container([
             'backgroundColor': 'rgba(120,0,0,0.4)'
             },
                 	md=4),
-   #3.
-                dbc.Col(html.Div("One of three columns")
-
-                ,
+   #3. doughnut_pie_chart_with_center
+                dbc.Col(html.Div(
+                dcc.Graph(
+		    id='doughnut_pie_chart_with_center',
+		    figure=doughnut_pie_chart_with_center,
+		    config={'displayModeBar': False },
+		    style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
+		    )
+                	),
 			style={
             'margin-top': '2px',
-            'height': '215px',
-            'backgroundColor': 'rgba(0,0,98,0.4)'
+            'height': '300px',
+            'backgroundColor': 'rgba(120,0,0,0.4)'
             },
-             md=4),
+                	md=4),
+
             ]
         ),
 
