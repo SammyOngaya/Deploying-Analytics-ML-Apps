@@ -13,11 +13,19 @@ df = pd.DataFrame({
     "Amount": [4, 1, 2, 2, 4, 5],
     "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
 })
+
+df_fruit = pd.DataFrame({
+    "Fruit": ["Apples", "Oranges", "Bananas"],
+    "Amount": [4, 1, 2]
+})
 # 
 
 # dash visualizations
 grouped_barchart=px.bar(df,x='Fruit',y='Amount',color='City',barmode='group',text='Amount')
 grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True)
+
+barchart=px.bar(df_fruit,x='Fruit',y='Amount',text='Amount',color='Amount')
+barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True, xaxis={'categoryorder':'category descending'})
 
 app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP]
@@ -118,6 +126,7 @@ app.layout=dbc.Container([
         ),
 
     # Graphs
+    #1.
         dbc.Row(
             [
                 dbc.Col(html.Div(
@@ -134,15 +143,21 @@ app.layout=dbc.Container([
             'backgroundColor': 'rgba(120,0,0,0.4)'
             },
                 	md=4),
-            
-            dbc.Col(html.Div("One of three columns")
-               ,
+   #2.
+            dbc.Col(html.Div(dcc.Graph(
+		    id='barchart',
+		    figure=barchart,
+		    config={'displayModeBar': False },
+		    style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
+		    )
+                	),
 			style={
             'margin-top': '2px',
-            'height': '215px',
-            'backgroundColor': 'rgba(0,120,0,0.4)'
+            'height': '300px',
+            'backgroundColor': 'rgba(120,0,0,0.4)'
             },
-             md=4),
+                	md=4),
+   #3.
                 dbc.Col(html.Div("One of three columns")
 
                 ,
