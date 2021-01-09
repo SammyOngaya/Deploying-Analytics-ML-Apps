@@ -8,7 +8,7 @@ from plotly.subplots import make_subplots
 import pandas as pd
 
 
-# Load data
+# Load and prepare data
 df2 = px.data.gapminder()
 gdp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent','year'],as_index=False)['gdpPercap'].mean())
 yearly_gdp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['gdpPercap'].mean()).sort_values(by=['gdpPercap'], ascending=True)
@@ -102,7 +102,7 @@ card_content3 = [
         [
             html.H1(avg_gdp_per_capita, className="card-title"),
             html.P(
-                "Avg. GDP Per Capita Sold",
+                "Avg. GDP Per Capita",
                 className="card-text",
             ),
         ],
@@ -130,10 +130,9 @@ app.layout=dbc.Container([
 	# navigation
 	dbc.NavbarSimple(
     children=[
+        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Temperature Analysis", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Titanic Analysis", active=True,href="#"))
+        dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=True,href="#"))
     ], 
     brand="Galaxy Analytics Dashbords",
     brand_href="#",
