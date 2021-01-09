@@ -17,33 +17,33 @@ yearly_lifeExp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)[
 yearly_avg_lifeExp_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['lifeExp'].mean())
 yearly_pop_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['pop'].sum())
 pop_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['pop'].mean())
-df3=df2[['year', 'country', 'lifeExp', 'gdpPercap']]
+df3=df2[['year', 'iso_alpha', 'lifeExp', 'gdpPercap']]
 # 
 
 # dash visualizations
-grouped_barchart=px.bar(yearly_gdp_df,x='year',y='gdpPercap',color='continent',text='gdpPercap')
-grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True) #use barmode='stack' when stacking,
+grouped_barchart=px.bar(yearly_gdp_df,x='year',y='gdpPercap',color='continent',text='gdpPercap',height=350)
+grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
-barchart=px.bar(lifeExp_df,x='continent',y='lifeExp',text='lifeExp',color='lifeExp')
-barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True)
+barchart=px.bar(lifeExp_df,x='continent',y='lifeExp',text='lifeExp',color='lifeExp',height=350)
+barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
-pop_barchart=px.bar(pop_df,y='continent',x='pop',text='pop')
-pop_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True)
+pop_barchart=px.bar(pop_df,y='continent',x='pop',text='pop',height=350)
+pop_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
 # donought pie chart with text at center
 doughnut_pie_chart_with_center = go.Figure(data=[go.Pie(labels=df2['continent'].tolist(), values=df2['pop'].tolist(), hole=.3)])
-doughnut_pie_chart_with_center.update_layout(showlegend=False,autosize=True,annotations=[dict(text='continent',  font_size=20, showarrow=False)])
+doughnut_pie_chart_with_center.update_layout(showlegend=False,autosize=True,annotations=[dict(text='continent',  font_size=20, showarrow=False)],margin=dict(t=0,b=0,l=0,r=0),height=350)
 
 # linegraph
-life_exp_linegraph = px.line(yearly_lifeExp_df, x="year", y="lifeExp",color='continent')
-life_exp_linegraph.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True)
+life_exp_linegraph = px.line(yearly_lifeExp_df, x="year", y="lifeExp",color='continent',height=350)
+life_exp_linegraph.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
 # line and bar
 # Create figure with secondary y-axis
 line_bar_pop_gdp = make_subplots(specs=[[{"secondary_y": True}]])
-line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"], name="life expectancy"), secondary_y=False,)
-line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_pop_df["year"], y=yearly_pop_df["pop"], name="population"), secondary_y=True,)
-line_bar_pop_gdp.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True)
+line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"], name="life expectancy"), secondary_y=False)
+line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_pop_df["year"], y=yearly_pop_df["pop"], name="population"), secondary_y=True)
+line_bar_pop_gdp.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
 
 # cards
 avg_gdp_per_capita=round(df2[df2['year']==2007]['gdpPercap'].mean(),2)
@@ -52,18 +52,15 @@ total_population=round(df2[df2['year']==2007]['pop'].sum()/1000000000,2)
 countries_analysed=df2[df2['year']==2007].groupby(['country'])['country'].nunique().sum()
 
 #boxplot
-gdp_boxplot = px.box(df2, x="year",y="lifeExp")
-doughnut_pie_chart_with_center.update_layout(showlegend=False,autosize=True)
+gdp_boxplot = px.box(df2, x="year",y="lifeExp",height=350)
+gdp_boxplot.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
 # table
-table_graph = go.Figure(data=[go.Table(
-    header=dict(values=list(df3.columns),
-                fill_color='paleturquoise',
-                align='left'),
-    cells=dict(values=[df3.year, df3.country, df3.lifeExp, df3.gdpPercap],
-               fill_color='lavender',
-               align='left'))
-])
+table_graph = go.Figure(data=[go.Table(header=dict(values=list(df3.columns),fill_color='paleturquoise',
+                align='left'),cells=dict(values=[df3.year, df3.iso_alpha, df3.lifeExp, df3.gdpPercap],
+               fill_color='lavender',align='left'))])
+table_graph.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
+
 
 
 app = dash.Dash(
@@ -237,7 +234,7 @@ app.layout=dbc.Container([
    #          'height': '300px',
    #          'backgroundColor': 'rgba(120,0,0,0.4)'
    #          },
-                	md=9),
+                	md=7),
 
     #5. 
            dbc.Col(html.Div(
@@ -255,7 +252,7 @@ app.layout=dbc.Container([
    #          'height': '300px',
    #          'backgroundColor': 'rgba(120,0,0,0.4)'
    #          },
-                	md=3),
+                	md=5),
                 # dbc.Col(html.Div("One of three columns"), md=4),
             ]
         ),
