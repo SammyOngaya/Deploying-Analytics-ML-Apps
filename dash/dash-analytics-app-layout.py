@@ -24,6 +24,8 @@ gdp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent','year'],as_index
 yearly_gdp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['gdpPercap'].mean()).sort_values(by=['gdpPercap'], ascending=True)
 lifeExp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
 yearly_lifeExp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
+yearly_avg_lifeExp_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['lifeExp'].mean())
+yearly_pop_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['pop'].sum())
 pop_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['pop'].mean())
 # 
 
@@ -50,8 +52,19 @@ life_exp_linegraph.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left"
 # line_bar_pop_gdp.add_bar(pop_df,x=pop_df['year'].tolist(),y=pop_df['pop'].tolist(),text=pop_df['pop'].tolist(),color=pop_df['continent'].tolist())
 # fig.add_bar(x=fruits, y=[2,1,3], name="Last year")
 
-line_bar_pop_gdp = px.line(x=yearly_lifeExp_df["year"], y=yearly_lifeExp_df["lifeExp"]) # labels=dict(x="Year", y="Pop", color="Time Period")
-# line_bar_pop_gdp.add_bar(x=fruits, y=[2,1,3], name="Last year")
+# line_bar_pop_gdp = px.line(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"]) # labels=dict(x="Year", y="Pop", color="Time Period")
+# line_bar_pop_gdp.add_bar(x=yearly_pop_df['year'], y=yearly_pop_df['pop'])
+
+line_bar_pop_gdp = go.Figure()
+line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"]))
+
+# line_bar_pop_gdp.add_trace(
+#     go.Bar(
+#         x=[0, 1, 2, 3, 4, 5],
+#         y=[1, 0.5, 0.7, -1.2, 0.3, 0.4]
+#     ))
+
+
 
 # cards
 avg_gdp_per_capita=round(df2[df2['year']==2007]['gdpPercap'].mean(),2)
