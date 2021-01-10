@@ -167,8 +167,6 @@ app.layout=dbc.Container([
 		    id='grouped-bar-graph',
 		    figure=grouped_barchart,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -183,8 +181,6 @@ app.layout=dbc.Container([
 		    id='barchart',
 		    figure=barchart,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -199,8 +195,6 @@ app.layout=dbc.Container([
 		    id='doughnut_pie_chart_with_center',
 		    figure=doughnut_pie_chart_with_center,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -222,8 +216,6 @@ app.layout=dbc.Container([
 		    id='life_exp_linegraph',
 		    figure=life_exp_linegraph,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -240,8 +232,6 @@ app.layout=dbc.Container([
 		    id='pop_barchart',
 		    figure=pop_barchart,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -262,8 +252,6 @@ app.layout=dbc.Container([
 		    id='line_bar_pop_gdp',
 		    figure=line_bar_pop_gdp,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -280,8 +268,6 @@ app.layout=dbc.Container([
 		    id='gdp_boxplot',
 		    figure=gdp_boxplot,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
@@ -296,8 +282,6 @@ app.layout=dbc.Container([
 		    id='table_graph',
 		    figure=table_graph,
 		    config={'displayModeBar': False }
-		    # ,
-		    # style={'width': '470px', 'height': '350px','margin-top': '0px','overflow': 'hidden'}
 		    )
                 	),
 			# style={
