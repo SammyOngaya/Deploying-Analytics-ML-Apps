@@ -8,6 +8,9 @@ from plotly.subplots import make_subplots
 import pandas as pd
 
 
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+server=app.server
+
 # Load and prepare data
 df2 = px.data.gapminder()
 gdp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent','year'],as_index=False)['gdpPercap'].mean())
@@ -61,11 +64,6 @@ table_graph = go.Figure(data=[go.Table(header=dict(values=list(df3.columns),fill
                fill_color='lavender',align='left'))])
 table_graph.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
 
-
-
-app = dash.Dash(
-    external_stylesheets=[dbc.themes.BOOTSTRAP]
-)
 
 # card definition
 card_content1 = [
