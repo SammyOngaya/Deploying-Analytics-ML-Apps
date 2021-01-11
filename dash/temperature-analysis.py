@@ -130,8 +130,8 @@ app.layout=dbc.Container([
 	# navigation
 	dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Temperature Analysis", active=False,href="#")),
+        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=False,href="#")),
+        dbc.NavItem(dbc.NavLink("Temperature Analysis", active=True,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
