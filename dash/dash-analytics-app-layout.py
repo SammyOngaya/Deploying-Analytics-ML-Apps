@@ -296,7 +296,7 @@ app.layout=dbc.Container([
         # footer
  		dbc.Row(
             [
-                dbc.Col(html.Div("footer"),
+                dbc.Col(html.Div("@galaxydataanalytics"),
                 	style={
             'margin-top': '2px',
             'text-align':'center',
