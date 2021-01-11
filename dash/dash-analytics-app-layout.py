@@ -299,6 +299,7 @@ app.layout=dbc.Container([
                 dbc.Col(html.Div("footer"),
                 	style={
             'margin-top': '2px',
+            'text-align':'center',
             'backgroundColor': 'rgba(120,120,120,0.2)'
             },
                  md=12)
@@ -307,8 +308,8 @@ app.layout=dbc.Container([
         #end footer
     ],
         style={
-            'padding-left': '5px',
-            'padding-right': '5px'
+            'padding-left': '3px',
+            'padding-right': '3px'
             },
 )
 	#end body
