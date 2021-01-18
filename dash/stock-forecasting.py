@@ -33,6 +33,16 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
 server=app.server
 
 
+# SIDEBAR_STYLE = {
+#     "position": "fixed",
+#     "top": 0,
+#     "left": 0,
+#     "bottom": 0,
+#     "width": "16rem",
+#     "padding": "2rem 1rem",
+#     "background-color": "#f8f9fa",
+# }
+
 #layout
 app.layout=dbc.Container([
 
@@ -49,61 +59,59 @@ app.layout=dbc.Container([
     color="primary",
     dark=True,
     style={'margin-bottom': '2px'}
-	),#end navigatio
-
-dbc.Row([
-dbc.Col(html.H1("Stock Market Dashboard",className='text-center text-primary, mb-4'),
-		width=12	)
-	]),
+	),#end navigation
 
 # prompts row
-dbc.Row([
-	dbc.Col([
-dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
-options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())])
-		]),
+	dbc.Row([
+		# start sidebar
+		dbc.Col([
 
-	dbc.Col([
-dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Symbols'].unique(),
-options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())]),
-		]),
-	dbc.Col([
-dcc.Dropdown(id='year-dropdown', multi=True, value=df['year_month'].unique(),
-options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())])
-		]),
-	dbc.Col([
-    dcc.RadioItems(id='xlog_multi_type', 
+			dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
+			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())]),
+
+			dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Symbols'].unique(),
+			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())]),
+
+			dcc.Dropdown(id='year-dropdown', multi=True, value=df['year_month'].unique(),
+			options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())]),
+
+			dcc.RadioItems(id='xlog_multi_type', 
                 options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'})
-		])
+		],
+		md=3
+		),
+		# end sidebar
 
+	dbc.Col([
+		dcc.Graph(id='line-fig', figure={})
+		], md=9)
 	], no_gutters=True),
-# row 1 end
+
+# row 2 start
+	dbc.Row([
+		dbc.Col([
+			dcc.Graph(id='table-fig', figure={})
+			]),
+		dbc.Col([
+			dcc.Graph(id='stackedbar-fig',figure={})
+			]),
+		], no_gutters=True),
+	#row 2 end
 
 # row 1 start
 dbc.Row([
 	dbc.Col([
-dcc.Graph(id='line-fig', figure={})
-		]),
-	dbc.Col([
-dcc.Graph(id='line-fig2',figure={})
+	dcc.Graph(id='line-fig2',figure={})
 		]),
 	], no_gutters=True),
 # row 1 end
 
-# row 2 start
-dbc.Row([
-	dbc.Col([
-dcc.Graph(id='table-fig', figure={})
-		]),
-		dbc.Col([
-dcc.Graph(id='stackedbar-fig',figure={})
-		]),
-	], no_gutters=True),
-#row 2 end
 
-	])
+	],
+	fluid=True
+	)
 
 
 # callbacks
