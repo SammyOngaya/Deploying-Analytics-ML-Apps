@@ -28,11 +28,12 @@ from dash.dependencies import Input, Output,State
 df=pd.read_csv("data/stock.csv")
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
+	   meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 server=app.server
 
-# meta_tags=[{'name':'viewport',
-# 'content':'width=device-width,initial-scale='}]
 
 #layout
 
