@@ -34,23 +34,8 @@ server=app.server
 
 
 #layout
+
 app.layout=dbc.Container([
-
-	# navigation
-	dbc.NavbarSimple(
-    children=[
-        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=False,href="#")),
-        dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="#")),
-        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
-        dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
-    ], 
-    brand="Stock Market Forecasting",
-    brand_href="#",
-    color="primary",
-    dark=True,
-    style={'margin-bottom': '2px'}
-	),#end navigatio
-
 dbc.Row([
 dbc.Col(html.H1("Stock Market Dashboard",className='text-center text-primary, mb-4'),
 		width=12	)
