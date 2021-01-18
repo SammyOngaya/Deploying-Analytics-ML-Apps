@@ -83,7 +83,6 @@ app.layout=dbc.Container([
 		md=3
 		),
 		# end sidebar
-
 	dbc.Col([
 		dcc.Graph(id='line-fig', figure={})
 		], md=9)
@@ -92,7 +91,7 @@ app.layout=dbc.Container([
 # row 2 start
 	dbc.Row([
 		dbc.Col([
-			dcc.Graph(id='table-fig', figure={})
+			dcc.Graph(id='line-fig2',figure={})
 			]),
 		dbc.Col([
 			dcc.Graph(id='stackedbar-fig',figure={})
@@ -103,7 +102,8 @@ app.layout=dbc.Container([
 # row 1 start
 dbc.Row([
 	dbc.Col([
-	dcc.Graph(id='line-fig2',figure={})
+		dcc.Graph(id='table-fig', figure={})
+	
 		]),
 	], no_gutters=True),
 # row 1 end
@@ -138,6 +138,8 @@ def update_graph(stock_slctd,date_selected):
         			])
     				)
 				)
+	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+	
 	return fig
 
 @app.callback(
@@ -150,6 +152,7 @@ def update_multi_graph(multi_stock_slctd,xlog_multi_type,date_selected):
 	dff=df[df['Symbols'].isin(multi_stock_slctd) & df['year_month'].isin(date_selected)]	
 	figln=px.line(dff,x='Date', y='High',color='Symbols')
 	figln.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
+	figln.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 	return figln
 
 @app.callback(
