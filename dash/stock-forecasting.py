@@ -33,12 +33,6 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
 server=app.server
 
 
-# SIDEBAR_STYLE = {
-#     "position": "fixed",
-#     "top": 5,
-#     "bottom":5,
-# }
-
 #layout
 app.layout=dbc.Container([
 
@@ -64,15 +58,15 @@ app.layout=dbc.Container([
 
 			dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
 			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
-			style={'margin-bottom': '10px'}),
+			style={'margin-bottom': '15px'}),
 
 			dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Symbols'].unique(),
 			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
-			style={'margin-bottom': '2px'}),
+			style={'margin-bottom': '10px'}),
 
 			dcc.Dropdown(id='year-dropdown', multi=True, value=df['year_month'].unique(),
 			options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
-			style={'margin-bottom': '2px'}),
+			style={'margin-bottom': '10px'}),
 
 			dcc.RadioItems(id='xlog_multi_type', 
                 options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
@@ -99,17 +93,31 @@ app.layout=dbc.Container([
 			dcc.Graph(id='stackedbar-fig',figure={})
 			]),
 		], no_gutters=True,
-		style={'height': '500px','margin-bottom': '5px'}),
+		style={'height': '500px','margin-bottom': '2px'}),
 	#row 2 end
 
 # row 1 start
 dbc.Row([
 	dbc.Col([
-		dcc.Graph(id='table-fig', figure={})
+		# dcc.Graph(id='table-fig', figure={})
 	
 		]),
 	], no_gutters=True),
 # row 1 end
+
+	  # footer
+ 		dbc.Row(
+            [
+                dbc.Col(html.Div("@galaxydataanalytics "),
+                	style={
+            'margin-top': '2px',
+            'text-align':'center',
+            'backgroundColor': 'rgba(120,120,120,0.2)'
+            },
+                 md=12)
+            ]
+        ),
+        #end footer
 
 
 	],
