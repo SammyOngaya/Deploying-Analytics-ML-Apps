@@ -35,12 +35,8 @@ server=app.server
 
 # SIDEBAR_STYLE = {
 #     "position": "fixed",
-#     "top": 0,
-#     "left": 0,
-#     "bottom": 0,
-#     "width": "16rem",
-#     "padding": "2rem 1rem",
-#     "background-color": "#f8f9fa",
+#     "top": 5,
+#     "bottom":5,
 # }
 
 #layout
@@ -58,7 +54,7 @@ app.layout=dbc.Container([
     brand_href="#",
     color="primary",
     dark=True,
-    style={'margin-bottom': '2px'}
+    style={'margin-bottom': '5px'}
 	),#end navigation
 
 # prompts row
@@ -67,26 +63,32 @@ app.layout=dbc.Container([
 		dbc.Col([
 
 			dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
-			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())]),
+			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			style={'margin-bottom': '10px'}),
 
 			dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Symbols'].unique(),
-			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())]),
+			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			style={'margin-bottom': '2px'}),
 
 			dcc.Dropdown(id='year-dropdown', multi=True, value=df['year_month'].unique(),
-			options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())]),
+			options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
+			style={'margin-bottom': '2px'}),
 
 			dcc.RadioItems(id='xlog_multi_type', 
                 options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
-                labelStyle={'display': 'inline-block'})
+                labelStyle={'display': 'inline-block'},
+                style={'margin-bottom': '2px'})
 		],
-		md=3
+		md=3,
+		style={'margin-bottom': '2px','margin-top': '2px','margin-left': '0px','border-style': 'solid','border-color': 'green'}
 		),
 		# end sidebar
 	dbc.Col([
 		dcc.Graph(id='line-fig', figure={})
 		], md=9)
-	], no_gutters=True),
+	], no_gutters=True,
+	style={'height': '400px','margin-bottom': '5px'}),
 
 # row 2 start
 	dbc.Row([
@@ -96,7 +98,8 @@ app.layout=dbc.Container([
 		dbc.Col([
 			dcc.Graph(id='stackedbar-fig',figure={})
 			]),
-		], no_gutters=True),
+		], no_gutters=True,
+		style={'height': '500px','margin-bottom': '5px'}),
 	#row 2 end
 
 # row 1 start
@@ -138,7 +141,7 @@ def update_graph(stock_slctd,date_selected):
         			])
     				)
 				)
-	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=400)
 	
 	return fig
 
@@ -150,8 +153,19 @@ Input('year-dropdown', 'value'),
 prevent_initial_call=False)
 def update_multi_graph(multi_stock_slctd,xlog_multi_type,date_selected):
 	dff=df[df['Symbols'].isin(multi_stock_slctd) & df['year_month'].isin(date_selected)]	
-	figln=px.line(dff,x='Date', y='High',color='Symbols')
+	figln=px.line(dff,x='Date', y='High',color='Symbols',height=400)
 	figln.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
+	figln.update_xaxes(rangeslider_visible=False,
+    rangeselector=dict(
+        buttons=list([
+            dict(count=1, label="1m", step="month", stepmode="backward"),
+            dict(count=6, label="6m", step="month", stepmode="backward"),
+            dict(count=1, label="YTD", step="year", stepmode="todate"),
+            dict(count=1, label="1y", step="year", stepmode="backward"),
+            dict(step="all")
+        			])
+    				)
+				)
 	figln.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 	return figln
 
@@ -178,8 +192,19 @@ prevent_initial_call=False)
 def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 	stock_stacked_df=pd.DataFrame(df.groupby(['year_month','Symbols'],as_index=False)['High'].mean()) #.sort_values(by=['gdpPercap'], ascending=True)
 	dff=stock_stacked_df[stock_stacked_df['Symbols'].isin(multi_stock_slctd) & stock_stacked_df['year_month'].isin(date_selected)]	
-	stacked_barchart=px.bar(dff,x='year_month',y='High',color='Symbols',text='High',height=350)
+	stacked_barchart=px.bar(dff,x='year_month',y='High',color='Symbols',text='High',height=400)
 	stacked_barchart.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
+	stacked_barchart.update_xaxes(rangeslider_visible=False,
+    rangeselector=dict(
+        buttons=list([
+            dict(count=1, label="1m", step="month", stepmode="backward"),
+            dict(count=6, label="6m", step="month", stepmode="backward"),
+            dict(count=1, label="YTD", step="year", stepmode="todate"),
+            dict(count=1, label="1y", step="year", stepmode="backward"),
+            dict(step="all")
+        			])
+    				)
+				)
 	stacked_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
 	return stacked_barchart
