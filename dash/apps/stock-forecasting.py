@@ -10,6 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
+from app import app
 
 
 # Data scraping
@@ -23,7 +24,7 @@ from dash.dependencies import Input, Output,State
 # df.to_csv("stock.csv",index=False)
 
 
-df=pd.read_csv("data/stock.csv")
+df=pd.read_csv("../datasets/stock.csv")
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
@@ -39,7 +40,7 @@ app.layout=dbc.Container([
 	# navigation
 	dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=False,href="#")),
+        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=False,href="/dash-analytics-app-layout")),
         dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
@@ -50,6 +51,8 @@ app.layout=dbc.Container([
     dark=True,
     style={'margin-bottom': '5px'}
 	),#end navigation
+	dcc.Location(id='url',refresh=False),
+	html.Div(id='page-content',children=[]),
 
 # prompts row
 	dbc.Row([
@@ -126,6 +129,14 @@ dbc.Row([
 
 
 # callbacks
+@app.callback(Output(component_id='page-content',component_property='children'),
+	[Input(component_id='url',component_property='pathname')])
+def display_page(pathname):
+	if pathname=='dash-analytics-app-layout':
+		return dash-analytics-app-layout.layout
+	else:
+		return "404 Error!! Please click on a link"
+
 @app.callback(
 Output('line-fig' , 'figure'),
 Input('my-dpdn', 'value'),
