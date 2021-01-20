@@ -10,6 +10,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
+import pathlib
+
 from app import app
 
 
@@ -23,25 +25,28 @@ from app import app
 # print(df.head())
 # df.to_csv("stock.csv",index=False)
 
+PATH=pathlib.Path(__file__).parent
+DATA_PATH=PATH.joinpath("../datasets").resolve()
 
-df=pd.read_csv("../datasets/stock.csv")
+df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
-	   meta_tags=[
-        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-    ])
-server=app.server
+# app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
+# 	   meta_tags=[
+#         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+#     ])
+# server=app.server
 
 
 #layout
-app.layout=dbc.Container([
+layout=dbc.Container([
 
 	# navigation
 	dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=False,href="/dash-analytics-app-layout")),
-        dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="#")),
+        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
+        dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
+        dbc.NavItem(dbc.NavLink("App1", active=True,href="/apps/app1")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
@@ -51,8 +56,9 @@ app.layout=dbc.Container([
     dark=True,
     style={'margin-bottom': '5px'}
 	),#end navigation
-	dcc.Location(id='url',refresh=False),
-	html.Div(id='page-content',children=[]),
+
+	# dcc.Location(id='url',refresh=False),
+	# html.Div(id='page-content',children=[]),
 
 # prompts row
 	dbc.Row([
@@ -127,15 +133,6 @@ dbc.Row([
 	fluid=True
 	)
 
-
-# callbacks
-@app.callback(Output(component_id='page-content',component_property='children'),
-	[Input(component_id='url',component_property='pathname')])
-def display_page(pathname):
-	if pathname=='dash-analytics-app-layout':
-		return dash-analytics-app-layout.layout
-	else:
-		return "404 Error!! Please click on a link"
 
 @app.callback(
 Output('line-fig' , 'figure'),
@@ -227,6 +224,18 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 	stacked_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
 	return stacked_barchart
+
+
+# links method
+# @app.callback(Output('stock-forecasting-page-content', 'children'),
+#               Input('url', 'pathname'))
+# def display_page(pathname):
+#     if pathname == '/apps/stock_forecasting':
+#         return stock_forecasting.layout
+#     elif pathname == '/apps/world_gdp_analysis':
+#         return world_gdp_analysis.layout
+#     else:
+#         return '404'
 
 
 if __name__ == "__main__":
