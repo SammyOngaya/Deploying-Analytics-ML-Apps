@@ -31,13 +31,6 @@ DATA_PATH=PATH.joinpath("../datasets").resolve()
 df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
 
-# app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
-# 	   meta_tags=[
-#         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-#     ])
-# server=app.server
-
-
 #layout
 layout=dbc.Container([
 
@@ -46,7 +39,6 @@ layout=dbc.Container([
     children=[
         dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
         dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
-        dbc.NavItem(dbc.NavLink("App1", active=True,href="/apps/app1")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
@@ -56,9 +48,6 @@ layout=dbc.Container([
     dark=True,
     style={'margin-bottom': '5px'}
 	),#end navigation
-
-	# dcc.Location(id='url',refresh=False),
-	# html.Div(id='page-content',children=[]),
 
 # prompts row
 	dbc.Row([
@@ -226,17 +215,5 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 	return stacked_barchart
 
 
-# links method
-# @app.callback(Output('stock-forecasting-page-content', 'children'),
-#               Input('url', 'pathname'))
-# def display_page(pathname):
-#     if pathname == '/apps/stock_forecasting':
-#         return stock_forecasting.layout
-#     elif pathname == '/apps/world_gdp_analysis':
-#         return world_gdp_analysis.layout
-#     else:
-#         return '404'
-
-
-if __name__ == "__main__":
-    app.run_server()
+# if __name__ == "__main__":
+#     app.run_server()

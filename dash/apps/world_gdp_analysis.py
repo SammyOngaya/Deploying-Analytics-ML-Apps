@@ -142,7 +142,6 @@ layout=dbc.Container([
     children=[
         dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
         dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
-        dbc.NavItem(dbc.NavLink("App1", active=True,href="/apps/app1")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
@@ -153,10 +152,6 @@ layout=dbc.Container([
     style={'margin-bottom': '2px'}
 
 ),#end navigation
-
-  #url
-  # dcc.Location(id='url', refresh=False),
-  # html.Div(id='page-content'),
 
 	#body
 	 html.Div(
@@ -337,16 +332,5 @@ layout=dbc.Container([
 	)
 
 
-# links method
-# @app.callback(Output('world-gdp-page-content', 'children'),
-#               Input('url', 'pathname'))
-# def display_page(pathname):
-#     if pathname == '/apps/stock_forecasting':
-#         return stock_forecasting.layout
-#     elif pathname == '/apps/world_gdp_analysis':
-#         return world_gdp_analysis.layout
-#     else:
-#         return '404'
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
+# if __name__ == '__main__':
+#     app.run_server(debug=True)
