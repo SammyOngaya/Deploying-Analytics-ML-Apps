@@ -146,7 +146,7 @@ layout=dbc.Container([
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
     brand="Galaxy Analytics Dashbords",
-    brand_href="#",
+    brand_href="/apps/home",
     color="primary",
     dark=True,
     style={'margin-bottom': '2px'}

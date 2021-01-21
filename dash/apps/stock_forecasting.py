@@ -43,7 +43,7 @@ layout=dbc.Container([
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
     brand="Stock Market Forecasting",
-    brand_href="#",
+    brand_href="/apps/home",
     color="primary",
     dark=True,
     style={'margin-bottom': '5px'}

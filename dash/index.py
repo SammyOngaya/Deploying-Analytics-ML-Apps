@@ -10,13 +10,19 @@ import pandas as pd
 
 from app import app
 from app import server
-from apps import stock_forecasting,world_gdp_analysis
+from apps import stock_forecasting,world_gdp_analysis,home
 
 
 app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
+  dcc.Location(id='url', refresh=False),
+   html.Div(id='page-content'),
+  
 ])
+
+
+
+
+
 
 
 # links method
@@ -27,8 +33,10 @@ def display_page(pathname):
         return stock_forecasting.layout
     elif pathname == '/apps/world_gdp_analysis':
         return world_gdp_analysis.layout
+    elif pathname == '/apps/home':
+        return home.layout
     else:
-        return '404'
+        return ''
 
 if __name__ == '__main__':
     app.run_server(debug=False)
