@@ -37,12 +37,12 @@ layout=dbc.Container([
 
   
 
-    # Graphs
+    
     #1.
         dbc.Row(
             [
                 dbc.Col(html.Div(
-     
+                  html.H1("World Gdp and Life Expectancy Analysis")     
                 	),
 			# style={
    #          'margin-top': '2px',
@@ -52,7 +52,7 @@ layout=dbc.Container([
                 	md=4),
    #2.
                       dbc.Col(html.Div(
-     
+                    html.H1("Stock Market Forecasting")  
                   ),
       # style={
    #          'margin-top': '2px',
@@ -62,7 +62,7 @@ layout=dbc.Container([
                   md=4),
    #3. doughnut_pie_chart_with_center
                        dbc.Col(html.Div(
-     
+              html.H1("Tweet Analysis")  
                   ),
       # style={
    #          'margin-top': '2px',
@@ -97,8 +97,10 @@ layout=dbc.Container([
    #          'backgroundColor': 'rgba(120,0,0,0.4)'
    #          },
                   md=4),
-                          dbc.Col(html.Div(
-     
+
+    # 6
+                         dbc.Col(html.Div( 
+
                   ),
       # style={
    #          'margin-top': '2px',
@@ -108,7 +110,7 @@ layout=dbc.Container([
                   md=4),
             ]
         ),
-     #6. 
+     
 
        
         # footer

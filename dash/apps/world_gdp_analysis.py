@@ -253,7 +253,6 @@ layout=dbc.Container([
    #          'backgroundColor': 'rgba(120,0,0,0.4)'
    #          },
                 	md=5),
-                # dbc.Col(html.Div("One of three columns"), md=4),
             ]
         ),
      #6. 
