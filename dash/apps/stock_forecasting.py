@@ -213,7 +213,3 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 	stacked_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
 	return stacked_barchart
-
-
-# if __name__ == "__main__":
-#     app.run_server()
