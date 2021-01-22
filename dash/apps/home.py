@@ -7,10 +7,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
+import pathlib
 
 from app import app
 from app import server
 from apps import stock_forecasting
+
+
+# PATH=pathlib.Path(__file__).parent
+# DATA_PATH=PATH.joinpath("../assets").resolve()
+
+# df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
 
 
 
@@ -41,34 +48,42 @@ layout=dbc.Container([
     #1.
         dbc.Row(
             [
-                dbc.Col(html.Div(
-                  html.H1("World Gdp and Life Expectancy Analysis")     
+                dbc.Col(html.Div([
+                  html.H6("World Gdp and Life Expectancy Analysis"),
+                  html.Img(src=app.get_asset_url('world-gdp-analysis.png'), style={'height':'100%', 'width':'100%'})  
+                  ] 
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+			style={
+            'margin-top': '30px',
+            # 'background-image': url("stock-market-analysis.png"),
+            # 'height': '300px',
+            # 'backgroundColor': 'rgba(120,0,0,0.4)'
+            },
                 	md=4),
    #2.
-                      dbc.Col(html.Div(
-                    html.H1("Stock Market Forecasting")  
+                      dbc.Col(html.Div([
+                    html.H6("Stock Market Forecasting") , 
+                    html.Img(src=app.get_asset_url('stock-market-analysis.png'), style={'height':'100%', 'width':'100%'}) 
+                    ]
                   ),
-      # style={
-   #          'margin-top': '2px',
+      style={
+            'margin-top': '30px',
    #          'height': '300px',
    #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+            },
                   md=4),
    #3. doughnut_pie_chart_with_center
                        dbc.Col(html.Div(
-              html.H1("Tweet Analysis")  
+              [
+                html.H6("Tweet Analysis") , 
+                    html.Img(src=app.get_asset_url('tweet-analysis.png'), style={'height':'100%', 'width':'100%'}) 
+              ]
                   ),
-      # style={
-   #          'margin-top': '2px',
+      style={
+            'margin-top': '30px',
    #          'height': '300px',
    #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+            },
                   md=4),
 
             ]

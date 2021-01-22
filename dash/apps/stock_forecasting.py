@@ -1,4 +1,4 @@
-import pandas_datareader.data as web
+# import pandas_datareader.data as web
 import datetime
 import pandas as pd
 
@@ -11,6 +11,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
 import pathlib
+
+from fbprophet import Prophet
+import plotly.offline as py
+import datetime
+
 
 from app import app
 
@@ -30,6 +35,21 @@ DATA_PATH=PATH.joinpath("../datasets").resolve()
 
 df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
+
+# df_fbp=df.copy()
+# df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
+# df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
+# df_fbp=df_fbp[df_fbp['Symbols']=='AMZN']
+# df_fbp=df_fbp[['Date','High']]
+# df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
+# df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
+# df_fbp0=df_fbp.copy()
+# estimated_days=6
+# df_fbp = df_fbp[:-estimated_days]
+# df_model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
+# df_model.fit(df_fbp)
+# df_forecast = df_model.make_future_dataframe(periods= estimated_days, freq='M')
+# df_forecast = df_model.predict(df_forecast)
 
 #layout
 layout=dbc.Container([
@@ -93,6 +113,18 @@ layout=dbc.Container([
 		], no_gutters=True,
 		style={'height': '500px','margin-bottom': '2px'}),
 	#row 2 end
+
+	# row 3 start
+	dbc.Row([
+		dbc.Col([
+			dcc.Graph(id='forecasting_table',figure={})
+			]),
+		dbc.Col([
+			dcc.Graph(id='forecasting_graph',figure={})
+			]),
+		], no_gutters=True,
+		style={'height': '500px','margin-bottom': '2px'}),
+	#row 3 end
 
 # row 1 start
 dbc.Row([
@@ -213,3 +245,60 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 	stacked_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
 	return stacked_barchart
+
+# forecasting graph
+
+# @app.callback(
+# Output('forecasting_graph' , 'figure'),
+# # Input('my-dpdn2', 'value')
+# )
+# def update_forecasting_graph():
+# 	actual_stock = go.Scatter(
+# 	    name = 'Actual Stock',
+# 	   mode = 'lines',
+# 	   x = list(df_fbp0['ds']),
+# 	   y = list(df_fbp0['y']),
+# 	   marker=dict(
+# 	      color='black',
+# 	      line=dict(width=2)
+# 	   )
+# 	)
+
+# 	trend = go.Scatter(
+# 	    name = 'trend',
+# 	    mode = 'lines',
+# 	    x = list(df_forecast['ds']),
+# 	    y = list(df_forecast['yhat']),
+# 	    marker=dict(
+# 	        color='orange',
+# 	        line=dict(width=3)
+# 	    )
+# 	)
+
+
+# 	upper_band = go.Scatter(
+# 	    name = 'upper band',
+# 	    mode = 'lines',
+# 	    x = list(df_forecast['ds']),
+# 	    y = list(df_forecast['yhat_upper']),
+# 	    line= dict(color='green'),
+# 	    fill = 'tonexty'
+# 	)
+
+# 	lower_band = go.Scatter(
+# 	    name= 'lower band',
+# 	    mode = 'lines',
+# 	    x = list(df_forecast['ds']),
+# 	    y = list(df_forecast['yhat_lower']),
+# 	    line= dict(color='blue')
+# 	)
+
+
+# 	plot_data = [trend, lower_band, upper_band,actual_stock]
+
+# 	layout = dict(title='Stock Forecasting',
+# 	             xaxis=dict(title = 'Dates', ticklen=2, zeroline=False))
+
+# 	figure=dict(data=plot_data,layout=layout)
+# 	figure=py.offline.iplot(figure)
+# 	return figure
