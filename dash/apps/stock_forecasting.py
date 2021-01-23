@@ -106,11 +106,11 @@ layout=dbc.Container([
 	# row 3 start
 	dbc.Row([
 		dbc.Col([
-			# dcc.Graph(id='forecasting_table',figure='forecasting_fig')
-			]),
+			dcc.Graph(id='forecasting_table',figure={})
+			], md=3),
 		dbc.Col([
 			dcc.Graph(id='forecasting_graph',figure={})
-			]),
+			], md=9),
 		], no_gutters=True,
 		style={'height': '500px','margin-bottom': '2px'}),
 	#row 3 end
@@ -249,24 +249,59 @@ def update_forecasting_graph(stock_slctd,date_selected):
 	df_fbp=df_fbp[['Date','High']]
 	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
 	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
-	estimated_days=6
-	df_fbp = df_fbp[:-estimated_days]
+	estimated_months=6
+	df_fbp = df_fbp[:-estimated_months]
 
 	#1. Uncomment the below two lines when using trained model
 	# with open('/app/apps/serialized_model.json', 'r') as fin:
 	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
 	#2. Train your model in real-time
 	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
-	model.fit(df)
+	model.fit(df_fbp)
 
-	df_forecast_2 = model.make_future_dataframe(periods= estimated_days, freq='M')
+	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
 	df_forecast_2 = model.predict(df_forecast_2)
-
+	# plot line graph
 	fig=go.Figure()
 	fig.add_trace(go.Scatter(x=df_fbp['ds'], y=df_fbp['y'], name='Actual',line = dict(color='firebrick'))) #dash='dash' to add line style
 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat'], name='Trend',line = dict(color='orange')))
-	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green')))
-	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue')))
-	fig.update_layout(dict(title='Stock Forecasting',xaxis=dict(title = 'Dates', ticklen=2, zeroline=False)))
+	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green'), fill = 'tonexty'))
+	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue'),fill = 'tonexty'))
+	fig.update_layout(dict(title=stock_slctd,xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
+	fig.add_annotation(x=2, y=5,text=stock_slctd,showarrow=True,arrowhead=1)
 	
 	return fig
+
+# # forecasting table
+@app.callback(
+Output('forecasting_table' , 'figure'),
+Input('my-dpdn', 'value'),
+Input('year-dropdown', 'value')
+)
+def update_forecasting_table(stock_slctd,date_selected):
+	df_fbp=df
+	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
+	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
+	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
+	df_fbp=df_fbp[['Date','High']]
+	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
+	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
+	estimated_months=6
+	df_fbp = df_fbp[:-estimated_months]
+
+	#1. Uncomment the below two lines when using trained model
+	# with open('/app/apps/serialized_model.json', 'r') as fin:
+	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
+	#2. Train your model in real-time
+	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
+	model.fit(df_fbp)
+
+	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
+	df_forecast_2 = model.predict(df_forecast_2)
+	# plot table
+	table_forecasting = go.Figure(data=[go.Table(header=dict(values=list(df_forecast_2[['ds','trend','yhat_lower','yhat_upper','yhat']].columns),fill_color='paleturquoise',
+                align='center'),cells=dict(values=[df_forecast_2.ds, df_forecast_2.trend, df_forecast_2.yhat_lower, df_forecast_2.yhat_upper,df_forecast_2.yhat],
+               fill_color='lavender',align='left'))])
+	table_forecasting.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
+	
+	return table_forecasting
