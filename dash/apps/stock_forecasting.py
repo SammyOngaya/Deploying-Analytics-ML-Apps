@@ -242,19 +242,23 @@ Input('my-dpdn', 'value'),
 Input('year-dropdown', 'value')
 )
 def update_forecasting_graph(stock_slctd,date_selected):
-	# dff=df[df['Symbols'].isin([stock_slctd]) & df['year_month'].isin(date_selected)]
 	df_fbp=df
 	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
 	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
-	df_fbp=df_fbp[df_fbp['Symbols']=='AMZN']
+	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
 	df_fbp=df_fbp[['Date','High']]
 	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
 	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
 	estimated_days=6
 	df_fbp = df_fbp[:-estimated_days]
 
-	with open('/app/apps/serialized_model.json', 'r') as fin:
-		model = model_from_json(json.load(fin))  # Load model   
+	#1. Uncomment the below two lines when using trained model
+	# with open('/app/apps/serialized_model.json', 'r') as fin:
+	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
+	#2. Train your model in real-time
+	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
+	model.fit(df)
+
 	df_forecast_2 = model.make_future_dataframe(periods= estimated_days, freq='M')
 	df_forecast_2 = model.predict(df_forecast_2)
 
