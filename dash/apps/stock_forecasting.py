@@ -15,6 +15,8 @@ import pathlib
 from fbprophet import Prophet
 import plotly.offline as py
 import datetime
+import json
+from fbprophet.serialize import model_to_json, model_from_json
 
 
 from app import app
@@ -33,23 +35,10 @@ from app import app
 PATH=pathlib.Path(__file__).parent
 DATA_PATH=PATH.joinpath("../datasets").resolve()
 
+
 df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
 
-# df_fbp=df.copy()
-# df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
-# df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
-# df_fbp=df_fbp[df_fbp['Symbols']=='AMZN']
-# df_fbp=df_fbp[['Date','High']]
-# df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
-# df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
-# df_fbp0=df_fbp.copy()
-# estimated_days=6
-# df_fbp = df_fbp[:-estimated_days]
-# df_model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
-# df_model.fit(df_fbp)
-# df_forecast = df_model.make_future_dataframe(periods= estimated_days, freq='M')
-# df_forecast = df_model.predict(df_forecast)
 
 #layout
 layout=dbc.Container([
@@ -117,7 +106,7 @@ layout=dbc.Container([
 	# row 3 start
 	dbc.Row([
 		dbc.Col([
-			dcc.Graph(id='forecasting_table',figure={})
+			# dcc.Graph(id='forecasting_table',figure='forecasting_fig')
 			]),
 		dbc.Col([
 			dcc.Graph(id='forecasting_graph',figure={})
@@ -247,58 +236,33 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 	return stacked_barchart
 
 # forecasting graph
+@app.callback(
+Output('forecasting_graph' , 'figure'),
+Input('my-dpdn', 'value'),
+Input('year-dropdown', 'value')
+)
+def update_forecasting_graph(stock_slctd,date_selected):
+	# dff=df[df['Symbols'].isin([stock_slctd]) & df['year_month'].isin(date_selected)]
+	df_fbp=df
+	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
+	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
+	df_fbp=df_fbp[df_fbp['Symbols']=='AMZN']
+	df_fbp=df_fbp[['Date','High']]
+	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
+	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
+	estimated_days=6
+	df_fbp = df_fbp[:-estimated_days]
 
-# @app.callback(
-# Output('forecasting_graph' , 'figure'),
-# # Input('my-dpdn2', 'value')
-# )
-# def update_forecasting_graph():
-# 	actual_stock = go.Scatter(
-# 	    name = 'Actual Stock',
-# 	   mode = 'lines',
-# 	   x = list(df_fbp0['ds']),
-# 	   y = list(df_fbp0['y']),
-# 	   marker=dict(
-# 	      color='black',
-# 	      line=dict(width=2)
-# 	   )
-# 	)
+	with open('/app/apps/serialized_model.json', 'r') as fin:
+		model = model_from_json(json.load(fin))  # Load model   
+	df_forecast_2 = model.make_future_dataframe(periods= estimated_days, freq='M')
+	df_forecast_2 = model.predict(df_forecast_2)
 
-# 	trend = go.Scatter(
-# 	    name = 'trend',
-# 	    mode = 'lines',
-# 	    x = list(df_forecast['ds']),
-# 	    y = list(df_forecast['yhat']),
-# 	    marker=dict(
-# 	        color='orange',
-# 	        line=dict(width=3)
-# 	    )
-# 	)
-
-
-# 	upper_band = go.Scatter(
-# 	    name = 'upper band',
-# 	    mode = 'lines',
-# 	    x = list(df_forecast['ds']),
-# 	    y = list(df_forecast['yhat_upper']),
-# 	    line= dict(color='green'),
-# 	    fill = 'tonexty'
-# 	)
-
-# 	lower_band = go.Scatter(
-# 	    name= 'lower band',
-# 	    mode = 'lines',
-# 	    x = list(df_forecast['ds']),
-# 	    y = list(df_forecast['yhat_lower']),
-# 	    line= dict(color='blue')
-# 	)
-
-
-# 	plot_data = [trend, lower_band, upper_band,actual_stock]
-
-# 	layout = dict(title='Stock Forecasting',
-# 	             xaxis=dict(title = 'Dates', ticklen=2, zeroline=False))
-
-# 	figure=dict(data=plot_data,layout=layout)
-# 	figure=py.offline.iplot(figure)
-# 	return figure
+	fig=go.Figure()
+	fig.add_trace(go.Scatter(x=df_fbp['ds'], y=df_fbp['y'], name='Actual',line = dict(color='firebrick'))) #dash='dash' to add line style
+	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat'], name='Trend',line = dict(color='orange')))
+	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green')))
+	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue')))
+	fig.update_layout(dict(title='Stock Forecasting',xaxis=dict(title = 'Dates', ticklen=2, zeroline=False)))
+	
+	return fig
