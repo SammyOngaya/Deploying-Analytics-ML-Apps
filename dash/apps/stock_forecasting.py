@@ -12,11 +12,11 @@ from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
 import pathlib
 
-from fbprophet import Prophet
+# from fbprophet import Prophet
 import plotly.offline as py
 import datetime
-import json
-from fbprophet.serialize import model_to_json, model_from_json
+# import json
+# from fbprophet.serialize import model_to_json, model_from_json
 
 
 from app import app
@@ -48,7 +48,7 @@ layout=dbc.Container([
     children=[
         dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
         dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
-        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
+        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True,href="/apps/tweet_analysis")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
     brand="Stock Market Forecasting",
@@ -271,45 +271,45 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 
 
 # forecasting graph
-@app.callback(
-Output('forecasting_graph_table' , 'figure'),
-Input('my-dpdn', 'value'),
-Input('forecasting-frequency', 'value')
-)
-def update_forecasting_graph(stock_slctd,forecasting_frequency):
-	df_fbp=df
-	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
-	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
-	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
-	df_fbp=df_fbp[['Date','High']]
-	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
-	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
-	estimated_months=int(forecasting_frequency)
-	df_fbp = df_fbp[:-estimated_months]
+# @app.callback(
+# Output('forecasting_graph_table' , 'figure'),
+# Input('my-dpdn', 'value'),
+# Input('forecasting-frequency', 'value')
+# )
+# def update_forecasting_graph(stock_slctd,forecasting_frequency):
+# 	df_fbp=df
+# 	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
+# 	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
+# 	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
+# 	df_fbp=df_fbp[['Date','High']]
+# 	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
+# 	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
+# 	estimated_months=int(forecasting_frequency)
+# 	df_fbp = df_fbp[:-estimated_months]
 
-	#1. Uncomment the below two lines when using trained model
-	# with open('/app/apps/serialized_model.json', 'r') as fin:
-	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
-	#2. Train your model in real-time
-	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
-	model.fit(df_fbp)
-	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
-	df_forecast_2 = model.predict(df_forecast_2)
+# 	#1. Uncomment the below two lines when using trained model
+# 	# with open('/app/apps/serialized_model.json', 'r') as fin:
+# 	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
+# 	#2. Train your model in real-time
+# 	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
+# 	model.fit(df_fbp)
+# 	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
+# 	df_forecast_2 = model.predict(df_forecast_2)
 	
-	fig = make_subplots(rows=1, cols=2,shared_xaxes=True,vertical_spacing=0.03,specs=[[{"type": "scatter"},{"type": "table"}]],
-    column_width=[0.8, 0.4],horizontal_spacing=0)
+# 	fig = make_subplots(rows=1, cols=2,shared_xaxes=True,vertical_spacing=0.03,specs=[[{"type": "scatter"},{"type": "table"}]],
+#     column_width=[0.8, 0.4],horizontal_spacing=0)
 
-	fig.add_trace(go.Scatter(x=df_fbp['ds'], y=df_fbp['y'], name='Actual',line = dict(color='firebrick')),row=1, col=1) #dash='dash' to add line style
-	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat'], name='Trend',line = dict(color='orange')),row=1, col=1)
-	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green'), fill = 'tonexty'),row=1, col=1)
-	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue'),fill = 'tonexty'),row=1, col=1)
-	fig.add_trace( go.Table(header=dict(values=df_forecast_2[['ds','trend','yhat_lower','yhat_upper','yhat']].columns,
-	            font=dict(size=10),align="left"),cells=dict(values=[df_forecast_2.ds, round(df_forecast_2.trend,2), round(df_forecast_2.yhat_lower,2), round(df_forecast_2.yhat_upper,2),round(df_forecast_2.yhat,2)],
-	            align = "left")),row=1, col=2)
-	fig.update_layout(dict(title=stock_slctd,xaxis=dict(title = 'Period', ticklen=2, zeroline=False)),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
-	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),title={'text': stock_slctd,'y':0.75,'x':0.4,'xanchor': 'center','yanchor': 'middle'})
+# 	fig.add_trace(go.Scatter(x=df_fbp['ds'], y=df_fbp['y'], name='Actual',line = dict(color='firebrick')),row=1, col=1) #dash='dash' to add line style
+# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat'], name='Trend',line = dict(color='orange')),row=1, col=1)
+# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green'), fill = 'tonexty'),row=1, col=1)
+# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue'),fill = 'tonexty'),row=1, col=1)
+# 	fig.add_trace( go.Table(header=dict(values=df_forecast_2[['ds','trend','yhat_lower','yhat_upper','yhat']].columns,
+# 	            font=dict(size=10),align="left"),cells=dict(values=[df_forecast_2.ds, round(df_forecast_2.trend,2), round(df_forecast_2.yhat_lower,2), round(df_forecast_2.yhat_upper,2),round(df_forecast_2.yhat,2)],
+# 	            align = "left")),row=1, col=2)
+# 	fig.update_layout(dict(title=stock_slctd,xaxis=dict(title = 'Period', ticklen=2, zeroline=False)),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+# 	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),title={'text': stock_slctd,'y':0.75,'x':0.4,'xanchor': 'center','yanchor': 'middle'})
 	
-	return fig
+# 	return fig
 
 
 

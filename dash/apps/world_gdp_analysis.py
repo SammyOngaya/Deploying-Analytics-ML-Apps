@@ -142,7 +142,7 @@ layout=dbc.Container([
     children=[
         dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
         dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
-        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=False,href="#")),
+        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True,href="/apps/tweet_analysis")),
         dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=False,href="#"))
     ], 
     brand="Galaxy Analytics Dashbords",
