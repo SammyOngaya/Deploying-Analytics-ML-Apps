@@ -17,16 +17,15 @@ PATH=pathlib.Path(__file__).parent
 DATA_PATH=PATH.joinpath("../datasets").resolve()
 df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
 
-number_of_tweets_card=df['name'].count()
+number_of_tweets=df['name'].count()
 
 # card definition
-card_content1 = [
+number_of_tweets_card = [
     # dbc.CardHeader("Countries",style={'text-align': 'center'}),
     dbc.CardBody(
         [
-            html.H1("1", className="card-title"),
-            html.P(
-                "Tweets Count",
+            html.H1(number_of_tweets, className="card-title"),
+            html.P("Tweets Count",
                 className="card-text",
             ),
         ],
@@ -102,7 +101,7 @@ layout=dbc.Container([
 		dbc.Col([
 
 			dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
-			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '15px'}),
 
 			dbc.Select(
@@ -121,16 +120,18 @@ layout=dbc.Container([
 	        ],style={'margin-bottom': '5px'}	          
 	          ),
 
-			dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Symbols'].unique(),
-			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			dcc.Dropdown(id='my-dpdn2',multi=True, 
+				# value=df['Symbols'].unique(),
+			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '10px'}),
 
-			dcc.Dropdown(id='year-dropdown', multi=True, value=df['year_month'].unique(),
-			options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
+			dcc.Dropdown(id='year-dropdown', multi=True, 
+				# value=df['year_month'].unique(),
+			# options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
 			style={'margin-bottom': '10px'}),
 
 			dcc.RadioItems(id='xlog_multi_type', 
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+                # options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'},
                 style={'margin-bottom': '2px'})
