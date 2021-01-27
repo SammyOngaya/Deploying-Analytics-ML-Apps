@@ -15,10 +15,9 @@ from app import server
 
 PATH=pathlib.Path(__file__).parent
 DATA_PATH=PATH.joinpath("../datasets").resolve()
+df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
 
-df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
-df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
-
+number_of_tweets_card=df['name'].count()
 
 # card definition
 card_content1 = [
@@ -27,7 +26,7 @@ card_content1 = [
         [
             html.H1("1", className="card-title"),
             html.P(
-                "Countries Analysed",
+                "Tweets Count",
                 className="card-text",
             ),
         ],
@@ -142,7 +141,7 @@ layout=dbc.Container([
 		# end sidebar
 	dbc.Col([
 		html.Div(dbc.Row([
-			html.Div(dbc.Card(card_content1, color="primary", inverse=True)),
+			html.Div(dbc.Card(number_of_tweets_card, color="primary", inverse=True)),
 			html.Div(dbc.Card(card_content2, color="primary", inverse=True),style={'padding-left': '50px'}),
 			html.Div(dbc.Card(card_content3, color="primary", inverse=True),style={'padding-left': '50px'}),
 			html.Div(dbc.Card(card_content4, color="primary", inverse=True),style={'padding-left': '50px'})]),
