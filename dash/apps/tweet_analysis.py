@@ -20,6 +20,7 @@ df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
 number_of_tweets=df['name'].count()
 favourites_count=round(df['favourites_count'].sum()/1000000,2)
 unique_users_count=df['name'].nunique()
+sentiment_polarity=round(df['sentiment_polarity'].mean(),2)
 
 # card definition
 number_of_tweets_card = [
@@ -63,13 +64,13 @@ unique_users_count_card = [
     ),
 ]
 
-card_content4 = [
+sentiment_polarity_card = [
     # dbc.CardHeader("Expectancy",style={'text-align': 'center'}),
     dbc.CardBody(
         [
-            html.H1("4", className="card-title"),
+            html.H1(sentiment_polarity, className="card-title"),
             html.P(
-                "Avg. Sentiment",
+                "Avg. Sentiment Polarity",
                 className="card-text",
             ),
         ],
@@ -147,7 +148,7 @@ layout=dbc.Container([
 			html.Div(dbc.Card(number_of_tweets_card, color="primary", inverse=True)),
 			html.Div(dbc.Card(favourites_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
 			html.Div(dbc.Card(unique_users_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(card_content4, color="primary", inverse=True),style={'padding-left': '50px'})]),
+			html.Div(dbc.Card(sentiment_polarity_card, color="primary", inverse=True),style={'padding-left': '50px'})]),
 			style={'padding-left': '20px'}
 			),
 		html.Hr(),
