@@ -8,6 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
+import dash_daq as daq #pip install dash-daq
 import pathlib
 
 from app import app
@@ -56,7 +57,7 @@ unique_users_count_card = [
         [
             html.H1(unique_users_count, className="card-title"),
             html.P(
-                "Unique Users",
+                "Unique Users Tweeted",
                 className="card-text",
             ),
         ],
@@ -152,8 +153,15 @@ layout=dbc.Container([
 			style={'padding-left': '20px'}
 			),
 		html.Hr(),
+
 		html.Div([
-			dcc.Graph(id='line-fig', figure={})],style={'margin-right':'0px'}
+			daq.Gauge( id='sentiment-polarity-gauge', label="Sentiment", 
+				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
+				showCurrentValue=True,
+				max=1,min=-1,
+				value=sentiment_polarity),
+			dcc.Graph(id='sentiment-polarity-graph', figure={})
+			]
 			)
 			], 
 			 md=9)
@@ -218,32 +226,18 @@ dbc.Row([
 
 
 # @app.callback(
-# Output('line-fig' , 'figure'),
-# Input('my-dpdn', 'value'),
-# Input('year-dropdown', 'value')
+# Output('sentiment-polarity-gauge' , 'value')
 # )
-# def update_graph(stock_slctd,date_selected):
-# 	dff=df[df['Symbols'].isin([stock_slctd]) & df['year_month'].isin(date_selected)]
-# 	fig=go.Figure()
-# 	fig.add_trace(go.Scatter(x=dff['Date'], y=dff['High'], name='High',line = dict(color='green'))) #dash='dash' to add line style
-# 	fig.add_trace(go.Scatter(x=dff['Date'], y=dff['Low'], name='Low',line = dict(color='firebrick')))
-# 	fig.add_trace(go.Scatter(x=dff['Date'], y=dff['Open'], name='Open',line = dict(color='orange')))
-# 	fig.add_trace(go.Scatter(x=dff['Date'], y=dff['Close'], name='Close',line = dict(color='royalblue')))
-# 	fig.update_xaxes(rangeslider_visible=True,
-#     rangeselector=dict(
-#         buttons=list([
-#             dict(count=1, label="1m", step="month", stepmode="backward"),
-#             dict(count=6, label="6m", step="month", stepmode="backward"),
-#             dict(count=1, label="YTD", step="year", stepmode="todate"),
-#             dict(count=1, label="1y", step="year", stepmode="backward"),
-#             dict(step="all")
-#         			])
-#     				)
-# 				)
-# 	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=400,
-# 		title={'text': stock_slctd,'y':0.75,'x':0.4,'xanchor': 'center','yanchor': 'middle'})
+# def update_sentiment_polarity_gauge_graph(value):
+# 	return value
 	
-# 	return fig
+			    # color={"gradient":True,"ranges":{"green":[0,6],"yellow":[6,8],"red":[8,10]}},
+			 #    value=2,
+			 #    label='Default',
+			 #    max=10,
+			 #    min=0,
+				# )  
+	
 
 # @app.callback(
 # Output('line-fig2' , 'figure'),
