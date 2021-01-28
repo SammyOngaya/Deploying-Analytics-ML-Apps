@@ -18,6 +18,8 @@ DATA_PATH=PATH.joinpath("../datasets").resolve()
 df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
 
 number_of_tweets=df['name'].count()
+favourites_count=round(df['favourites_count'].sum()/1000000,2)
+unique_users_count=df['name'].nunique()
 
 # card definition
 number_of_tweets_card = [
@@ -33,13 +35,13 @@ number_of_tweets_card = [
     ),
 ]
 
-card_content2 = [
+favourites_count_card = [
     # dbc.CardHeader("Population",style={'text-align': 'center'}),
     dbc.CardBody(
         [
-            html.H1("2", className="card-title"),
+            html.H1(favourites_count, className="card-title"),
             html.P(
-                "Tota Population (Bn)",
+                "Tweets Likes (Mn)",
                 className="card-text",
             ),
         ],
@@ -47,13 +49,13 @@ card_content2 = [
     ),
 ]
 
-card_content3 = [
+unique_users_count_card = [
     # dbc.CardHeader("GDP Per Capita",style={'text-align': 'center'}),
     dbc.CardBody(
         [
-            html.H1("3", className="card-title"),
+            html.H1(unique_users_count, className="card-title"),
             html.P(
-                "Avg. GDP Per Capita",
+                "Unique Users",
                 className="card-text",
             ),
         ],
@@ -67,7 +69,7 @@ card_content4 = [
         [
             html.H1("4", className="card-title"),
             html.P(
-                "Avg. Life Expectancy",
+                "Avg. Sentiment",
                 className="card-text",
             ),
         ],
@@ -143,8 +145,8 @@ layout=dbc.Container([
 	dbc.Col([
 		html.Div(dbc.Row([
 			html.Div(dbc.Card(number_of_tweets_card, color="primary", inverse=True)),
-			html.Div(dbc.Card(card_content2, color="primary", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(card_content3, color="primary", inverse=True),style={'padding-left': '50px'}),
+			html.Div(dbc.Card(favourites_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
+			html.Div(dbc.Card(unique_users_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
 			html.Div(dbc.Card(card_content4, color="primary", inverse=True),style={'padding-left': '50px'})]),
 			style={'padding-left': '20px'}
 			),
