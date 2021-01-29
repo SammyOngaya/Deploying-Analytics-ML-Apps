@@ -100,7 +100,8 @@ layout=dbc.Container([
 			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '10px'}),
 
-			dcc.Dropdown(id='year-dropdown', multi=True, value=df['year_month'].unique(),
+			dcc.Dropdown(id='year-dropdown', multi=True, 
+				value=df['year_month'].unique(),
 			options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
 			style={'margin-bottom': '10px'}),
 

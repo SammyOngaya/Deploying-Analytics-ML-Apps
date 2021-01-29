@@ -129,13 +129,28 @@ layout=dbc.Container([
 			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '10px'}),
 
-			dcc.Dropdown(id='calendar_propmt', multi=True, 
-				# value=df['year_month'].unique(),
-			# options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
-			style={'margin-bottom': '10px'}),
+			# dcc.Dropdown(id='calendar_prompt',multi=True, 
+			# 	value=df['created_at'].unique(),
+			# options=[{'label':x,'value':x} for x in sorted(df['created_at'].unique())],
+			# style={'margin-bottom': '10px'}),
+
+			dcc.DatePickerRange(
+			    id='calendar_prompt',
+			    start_date_placeholder_text=min(df['created_at']),
+			    end_date_placeholder_text='end date',
+			    min_date_allowed=datetime.date(2021,1,20),
+        		max_date_allowed=max(df['created_at']),
+			    display_format='YYYY-MM-DD'
+			),
+			# dcc.Input(
+		 #    id='calendar_prompt',
+		 #    # type='Date',
+		 #    # value=datetime.date.today()
+		 #    value=df['created_at'].unique()
+			# 	),
 
 			dcc.RadioItems(id='xlog_multi_type', 
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+                # options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'},
                 style={'margin-bottom': '2px'})
@@ -149,7 +164,8 @@ layout=dbc.Container([
 			html.Div(dbc.Card(number_of_tweets_card, color="primary", inverse=True)),
 			html.Div(dbc.Card(favourites_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
 			html.Div(dbc.Card(unique_users_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(sentiment_polarity_card, color="primary", inverse=True),style={'padding-left': '50px'})]),
+			html.Div(dbc.Card(sentiment_polarity_card, color="primary", inverse=True),style={'padding-left': '50px'})
+			]),
 			style={'padding-left': '20px'}
 			),
 		html.Hr(),
@@ -163,7 +179,7 @@ layout=dbc.Container([
 				showCurrentValue=True,
 				max=1,min=-1,
 				value=sentiment_polarity,style={'width':'200px','float':'left'}),
-			dcc.Graph(id='sentiment-polarity-graph', figure={},style={'width':'700px','float':'right'})
+			dcc.Graph(id='sent-polar', figure={},style={'width':'700px','float':'right'})
 			]),
 			
 			
@@ -236,14 +252,17 @@ dbc.Row([
 # 	return value
 	
 @app.callback(
-Output('sentiment-polarity-graph' , 'figure'),
-Input('xlog_multi_type','value'),
-)
-def update_sentiment_polarity_gauge_graph():
+Output('sent-polar' , 'figure'),
+Input('calendar_prompt','value'),
+# Input('calendar_prompt','end_date'),
+ prevent_initial_call=False)
+def update_sentiment_polarity_gauge_graph(date_selected):
+	# dff=df[df['created_at'].isin([date_selected])]
+	dff=df[(df['created_at'] > '2021-01-28') & (df['created_at'] <= '2021-01-29')]
 	fig=go.Figure()
-	fig.add_trace(go.Scatter(x=df['created_at'], y=df['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
+	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
 	fig.update_layout(dict(xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
-	fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
+	# fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
 	return fig
 
 
