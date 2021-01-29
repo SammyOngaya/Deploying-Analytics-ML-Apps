@@ -129,13 +129,13 @@ layout=dbc.Container([
 			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '10px'}),
 
-			dcc.Dropdown(id='year-dropdown', multi=True, 
+			dcc.Dropdown(id='calendar_propmt', multi=True, 
 				# value=df['year_month'].unique(),
 			# options=[{'label':x,'value':x} for x in sorted(df['year_month'].unique())],
 			style={'margin-bottom': '10px'}),
 
 			dcc.RadioItems(id='xlog_multi_type', 
-                # options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'},
                 style={'margin-bottom': '2px'})
@@ -154,17 +154,21 @@ layout=dbc.Container([
 			),
 		html.Hr(),
 
-		html.Div([
+		# html.Div( 
+			# dbc.Row([
+
+			html.Div([
 			daq.Gauge( id='sentiment-polarity-gauge', label="Sentiment", 
 				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
 				showCurrentValue=True,
 				max=1,min=-1,
-				value=sentiment_polarity),
-			dcc.Graph(id='sentiment-polarity-graph', figure={})
-			]
-			)
-			], 
-			 md=9)
+				value=sentiment_polarity,style={'width':'200px','float':'left'}),
+			dcc.Graph(id='sentiment-polarity-graph', figure={},style={'width':'700px','float':'right'})
+			]),
+			
+			
+			 # md=9),
+		])
 	], no_gutters=True,
 	style={'margin-bottom': '1px'}),
 
@@ -231,12 +235,18 @@ dbc.Row([
 # def update_sentiment_polarity_gauge_graph(value):
 # 	return value
 	
-			    # color={"gradient":True,"ranges":{"green":[0,6],"yellow":[6,8],"red":[8,10]}},
-			 #    value=2,
-			 #    label='Default',
-			 #    max=10,
-			 #    min=0,
-				# )  
+@app.callback(
+Output('sentiment-polarity-graph' , 'figure'),
+Input('xlog_multi_type','value'),
+)
+def update_sentiment_polarity_gauge_graph():
+	fig=go.Figure()
+	fig.add_trace(go.Scatter(x=df['created_at'], y=df['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
+	fig.update_layout(dict(xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
+	fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
+	return fig
+
+
 	
 
 # @app.callback(
