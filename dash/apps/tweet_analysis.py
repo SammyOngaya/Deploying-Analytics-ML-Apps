@@ -124,10 +124,11 @@ layout=dbc.Container([
 	        ],style={'margin-bottom': '5px'}	          
 	          ),
 
-			dcc.Dropdown(id='my-dpdn2',multi=True, 
-				# value=df['Symbols'].unique(),
-			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
-			style={'margin-bottom': '10px'}),
+			# dcc.Dropdown(id='region-prompt',multi=True, 
+			# value=df['created_at'].head(5).unique(),
+			# options=[{'label':x,'value':x} for x in sorted(df['created_at'].unique())],
+			# # options=[{'label':x,'value':x} for x in sorted(df['location'].unique())],
+			# style={'margin-bottom': '10px'}),
 
 			# dcc.Dropdown(id='calendar_prompt',multi=True, 
 			# 	value=df['created_at'].unique(),
@@ -187,27 +188,28 @@ layout=dbc.Container([
 		])
 	], no_gutters=True,
 	style={'margin-bottom': '1px'}),
-
+html.Hr(),
 # row 2 start
-	dbc.Row([
-		dbc.Col([
-			dcc.Graph(id='line-fig2',figure={})
-			]),
-		dbc.Col([
-			dcc.Graph(id='stackedbar-fig',figure={})
-			]),
-		], no_gutters=True,
-		style={'height': '400px','margin-bottom': '2px'}),
+	# dbc.Row([
+	# 	dbc.Col([
+	# 		# dcc.Graph(id='sent-pol-region-bar',figure={},style={'width':'700px'})
+	# 		dcc.Graph(id='sent-pol-region-bar',figure={})
+	# 		], md=6),
+	# 	dbc.Col([
+	# 		dcc.Graph(id='sent-pol-region-bar',figure={})
+	# 		], md=6),
+	# 	], no_gutters=True,
+	# 	style={'margin-bottom': '2px'}),
 	#row 2 end
 
 	# row 3 start
 	dbc.Row([
 		dbc.Col([
 			# dcc.Graph(id='forecasting_table',figure={})
-			], md=0),
+			], md=6),
 		dbc.Col([
-			dcc.Graph(id='forecasting_graph_table',figure={})
-			], md=12),
+			dcc.Graph(id='sent-pol-region-bar',figure={})
+			], md=6),
 		dbc.Col([
 			# dcc.Graph(id='forecasting_graph',figure={})
 			], md=0),
@@ -256,17 +258,48 @@ Output('sent-polar' , 'figure'),
 Input('calendar_prompt','value'),
 # Input('calendar_prompt','end_date'),
  prevent_initial_call=False)
-def update_sentiment_polarity_gauge_graph(date_selected):
+def update_sentiment_polarity_line_graph(date_selected):
 	# dff=df[df['created_at'].isin([date_selected])]
-	dff=df[(df['created_at'] > '2021-01-28') & (df['created_at'] <= '2021-01-29')]
+	dff=df[(df['created_at'] > min(df['created_at'])) & (df['created_at'] <= max(df['created_at']))]
 	fig=go.Figure()
-	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color=df['sentiment_polarity_color']))) 
+	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
 	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
 	# fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
 	return fig
 
-
+@app.callback(
+Output('sent-pol-region-bar' , 'figure'),
+Input('calendar_prompt','value'),
+# Input('calendar_prompt','end_date'),
+ prevent_initial_call=False)
+def update_sent_pol_region_bar_graph(date_selected):
+	# dff=df[df['created_at'].isin([date_selected])]
+	regional_avg_sentiment_df=pd.DataFrame(df.groupby(['location'],as_index=False)['sentiment_polarity'].mean()).head(50)
+	# dff=regional_avg_sentiment_df[regional_avg_sentiment_df['location'].isin([region])]
+	fig = go.Figure()
+	fig.add_trace(
+	go.Bar(name='Polarity',x=regional_avg_sentiment_df['location'],
+           y=regional_avg_sentiment_df['sentiment_polarity'],
+          ))
+	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
 	
+	return fig
+	
+
+# @app.callback(
+# Output('sent_pol_region_bar' , 'figure'),
+# Input('calendar_prompt','value'),
+# # Input('calendar_prompt','end_date'),
+#  # prevent_initial_call=False
+#  )
+# def update_sent_pol_reg_graph(region_selected):
+# 	dff=df[(df['created_at'] > min(df['created_at'])) & (df['created_at'] <= max(df['created_at']))]
+# 	fig=go.Figure()
+# 	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
+# 	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
+# 	# fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
+# 	return fig
+
 
 # @app.callback(
 # Output('line-fig2' , 'figure'),
