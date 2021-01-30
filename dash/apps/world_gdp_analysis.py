@@ -161,9 +161,7 @@ layout=dbc.Container([
        dbc.Row(
             [
                 dbc.Col(dbc.Card(card_content1, color="primary", inverse=True)),
-                dbc.Col(
-                    dbc.Card(card_content2, color="secondary", inverse=True)
-                ),
+                dbc.Col(dbc.Card(card_content2, color="secondary", inverse=True)),
                 dbc.Col(dbc.Card(card_content3, color="info", inverse=True)),
                 dbc.Col(dbc.Card(card_content4, color="success", inverse=True)),
             ],

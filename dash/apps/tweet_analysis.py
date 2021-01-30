@@ -260,8 +260,8 @@ def update_sentiment_polarity_gauge_graph(date_selected):
 	# dff=df[df['created_at'].isin([date_selected])]
 	dff=df[(df['created_at'] > '2021-01-28') & (df['created_at'] <= '2021-01-29')]
 	fig=go.Figure()
-	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
-	fig.update_layout(dict(xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
+	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color=df['sentiment_polarity_color']))) 
+	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
 	# fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
 	return fig
 
