@@ -22,6 +22,7 @@ number_of_tweets=df['name'].count()
 favourites_count=round(df['favourites_count'].sum()/1000000,2)
 unique_users_count=df['name'].nunique()
 sentiment_polarity=round(df['sentiment_polarity'].mean(),2)
+sentiment_subjectivity=round(df['sentiment_subjectivity'].mean(),2)
 
 # card definition
 number_of_tweets_card = [
@@ -104,26 +105,13 @@ layout=dbc.Container([
 		# start sidebar
 		dbc.Col([
 
-			dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
+			dcc.Dropdown(id='country-promptn', multi=False, value='AMZN', placeholder='Select Region...',
 			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '15px'}),
 
-			dbc.Select(
-			id="forecasting-frequency",value='6', options=[
-	        {"label": "1", "value": "1"},
-	        {"label": "2", "value": "2"},
-	        {"label": "3",  "value": "3"},
-	        {"label": "4", "value": "4"},
-	        {"label": "5", "value": "5"},
-	        {"label": "6",  "value": "6"},
-	        {"label": "7", "value": "7"},
-	        {"label": "8", "value": "8"},
-	        {"label": "9",  "value": "9"},
-	        {"label": "10", "value": "10"},
-	        
-	        ],style={'margin-bottom': '5px'}	          
-	          ),
-
+			dcc.Dropdown(id='user-prompt', multi=False, value='AMZN', placeholder='Select Users...',
+			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			style={'margin-bottom': '15px'}),
 			# dcc.Dropdown(id='region-prompt',multi=True, 
 			# value=df['created_at'].head(5).unique(),
 			# options=[{'label':x,'value':x} for x in sorted(df['created_at'].unique())],
@@ -138,7 +126,7 @@ layout=dbc.Container([
 			dcc.DatePickerRange(
 			    id='calendar_prompt',
 			    start_date_placeholder_text=min(df['created_at']),
-			    end_date_placeholder_text='end date',
+			    end_date_placeholder_text='Select end date',
 			    min_date_allowed=datetime.date(2021,1,20),
         		max_date_allowed=max(df['created_at']),
 			    display_format='YYYY-MM-DD'
@@ -150,22 +138,27 @@ layout=dbc.Container([
 		 #    value=df['created_at'].unique()
 			# 	),
 
-			dcc.RadioItems(id='xlog_multi_type', 
-                # options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'},
-                style={'margin-bottom': '2px'})
+			# dcc.RadioItems(id='xlog_multi_type', 
+   #              options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+   #              value='Linear',
+   #              labelStyle={'display': 'inline-block'},
+   #              style={'margin-bottom': '2px'})
+   			daq.Gauge( id='sentiment-polarity-gauge', label="Sentiment Polarity", 
+				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
+				showCurrentValue=True,
+				max=1,min=-1,
+				value=sentiment_polarity,style={'width':'150px','float':'right','padding-right': '120px'})
 		],
 		md=3,
-		style={'margin-bottom': '2px','margin-top': '2px','margin-left': '0px','border-style': 'solid','border-color': 'green'}
+		style={'margin-bottom': '2px','margin-top': '2px','margin-left': '0px','border-style': 'ridge','border-color': 'green'}
 		),
 		# end sidebar
 	dbc.Col([
 		html.Div(dbc.Row([
-			html.Div(dbc.Card(number_of_tweets_card, color="primary", inverse=True)),
-			html.Div(dbc.Card(favourites_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(unique_users_count_card, color="primary", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(sentiment_polarity_card, color="primary", inverse=True),style={'padding-left': '50px'})
+			html.Div(dbc.Card(number_of_tweets_card, color="info", inverse=True)),
+			html.Div(dbc.Card(favourites_count_card, color="info", inverse=True),style={'padding-left': '50px'}),
+			html.Div(dbc.Card(unique_users_count_card, color="info", inverse=True),style={'padding-left': '50px'}),
+			html.Div(dbc.Card(sentiment_polarity_card, color="info", inverse=True),style={'padding-left': '50px'})
 			]),
 			style={'padding-left': '20px'}
 			),
@@ -175,11 +168,11 @@ layout=dbc.Container([
 			# dbc.Row([
 
 			html.Div([
-			daq.Gauge( id='sentiment-polarity-gauge', label="Sentiment", 
+			daq.Gauge( id='sentiment-subjectivity-gauge', label="Sentiment Subjectivity", 
 				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
 				showCurrentValue=True,
 				max=1,min=-1,
-				value=sentiment_polarity,style={'width':'200px','float':'left'}),
+				value=sentiment_subjectivity,style={'width':'150px','float':'left','padding-left': '80px'}),
 			dcc.Graph(id='sent-polar', figure={},style={'width':'700px','float':'right'})
 			]),
 			
@@ -205,11 +198,11 @@ html.Hr(),
 	# row 3 start
 	dbc.Row([
 		dbc.Col([
-			# dcc.Graph(id='forecasting_table',figure={})
-			], md=6),
+			# dcc.Graph(id='sent-pol-region-bar',figure={})
+			], md=0),
 		dbc.Col([
-			dcc.Graph(id='sent-pol-region-bar',figure={})
-			], md=6),
+			dcc.Graph(id='sent-pol-region-user-bar',figure={})
+			], md=12),
 		dbc.Col([
 			# dcc.Graph(id='forecasting_graph',figure={})
 			], md=0),
@@ -268,22 +261,23 @@ def update_sentiment_polarity_line_graph(date_selected):
 	return fig
 
 @app.callback(
-Output('sent-pol-region-bar' , 'figure'),
+Output('sent-pol-region-user-bar' , 'figure'),
 Input('calendar_prompt','value'),
-# Input('calendar_prompt','end_date'),
  prevent_initial_call=False)
 def update_sent_pol_region_bar_graph(date_selected):
-	# dff=df[df['created_at'].isin([date_selected])]
-	regional_avg_sentiment_df=pd.DataFrame(df.groupby(['location'],as_index=False)['sentiment_polarity'].mean()).head(50)
+	df_new=df.dropna(subset=['name', 'location'], how='any')
+	regional_avg_sentiment_df=pd.DataFrame(df_new.groupby(['location'],as_index=False)['sentiment_polarity'].mean()).head(50)
+	regional_avg_sentiment_df=regional_avg_sentiment_df[(regional_avg_sentiment_df['sentiment_polarity'] != 0.000)]
+	user_avg_sentiment_df=pd.DataFrame(df_new.groupby(['name'],as_index=False)['sentiment_polarity'].mean()).head(50)
+	user_avg_sentiment_df=user_avg_sentiment_df[(user_avg_sentiment_df['sentiment_polarity'] != 0.000)]
 	# dff=regional_avg_sentiment_df[regional_avg_sentiment_df['location'].isin([region])]
-	fig = go.Figure()
-	fig.add_trace(
-	go.Bar(name='Polarity',x=regional_avg_sentiment_df['location'],
-           y=regional_avg_sentiment_df['sentiment_polarity'],
-          ))
-	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
-	
+	fig = make_subplots(rows=1, cols=2,shared_xaxes=False,shared_yaxes=True,vertical_spacing=0.03,specs=[[{"type": "bar"},{"type": "bar"}]],
+	    column_width=[50, 50],horizontal_spacing=0.015)
+	fig.add_trace(go.Bar(name='Region',x=regional_avg_sentiment_df['location'].str[:20],y=regional_avg_sentiment_df['sentiment_polarity'],marker=dict(color="skyblue"), showlegend=True),row=1, col=1)
+	fig.add_trace(go.Bar(name='User',x=user_avg_sentiment_df["name"].str[:20],y=user_avg_sentiment_df["sentiment_polarity"], marker=dict(color="teal"), showlegend=True),row=1, col=2)
+	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
 	return fig
+
 	
 
 # @app.callback(
