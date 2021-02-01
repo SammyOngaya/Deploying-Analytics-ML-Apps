@@ -9,6 +9,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
 import dash_daq as daq #pip install dash-daq
+import dash_leaflet as dl
+import dash_leaflet.express as dlx
 import pathlib
 
 from app import app
@@ -210,6 +212,32 @@ html.Hr(),
 		style={'margin-bottom': '2px'}
 		),
 	#row 3 end
+
+	# row 3 start
+	dbc.Row([
+		dbc.Col([
+			# dcc.Graph(id='sent-pol-region-bar',figure={})
+			], md=0),
+		dbc.Col([
+			# dl.Map(dl.TileLayer(), style={'width': '1000px', 'height': '500px'}),
+							 dl.Map([
+				        dl.TileLayer(),
+				        # From in-memory geojson. All markers at same point forces spiderfy at any zoom level.
+				        dl.GeoJSON(data=dlx.dicts_to_geojson([dict(lat=-37.8, lon=175.6)] * 100), cluster=True),
+				        # From hosted asset (best performance).
+				        dl.GeoJSON(url='assets/leaflet_50k.pbf', format="geobuf", cluster=True, id="sc", zoomToBoundsOnClick=True,
+				                   superClusterOptions={"radius": 100}),
+				    ], center=(-37.75, 175.4), zoom=11, style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
+							 
+			], md=12),
+		dbc.Col([
+			# dcc.Graph(id='forecasting_graph',figure={})
+			], md=0),
+		], no_gutters=True,
+		style={'margin-bottom': '2px'}
+		),
+	#row 3 end
+
 
 # row 1 start
 dbc.Row([
