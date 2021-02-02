@@ -9,8 +9,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output,State
 import dash_daq as daq #pip install dash-daq
-import dash_leaflet as dl
-import dash_leaflet.express as dlx
+import geopandas
+import json
+# import dash_leaflet as dl
+# import dash_leaflet.express as dlx
 import pathlib
 
 from app import app
@@ -19,6 +21,9 @@ from app import server
 PATH=pathlib.Path(__file__).parent
 DATA_PATH=PATH.joinpath("../datasets").resolve()
 df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
+
+with open(DATA_PATH.joinpath("countries.geojson")) as response:
+    country_geojson = json.load(response)
 
 number_of_tweets=df['name'].count()
 favourites_count=round(df['favourites_count'].sum()/1000000,2)
@@ -216,23 +221,14 @@ html.Hr(),
 	# row 3 start
 	dbc.Row([
 		dbc.Col([
-			# dcc.Graph(id='sent-pol-region-bar',figure={})
+			dcc.Graph(id='sentiment-polarity-geo',figure={})
+			], md=6),
+		dbc.Col([
+				 
 			], md=0),
 		dbc.Col([
-			# dl.Map(dl.TileLayer(), style={'width': '1000px', 'height': '500px'}),
-							 dl.Map([
-				        dl.TileLayer(),
-				        # From in-memory geojson. All markers at same point forces spiderfy at any zoom level.
-				        dl.GeoJSON(data=dlx.dicts_to_geojson([dict(lat=-37.8, lon=175.6)] * 100), cluster=True),
-				        # From hosted asset (best performance).
-				        dl.GeoJSON(url='assets/leaflet_50k.pbf', format="geobuf", cluster=True, id="sc", zoomToBoundsOnClick=True,
-				                   superClusterOptions={"radius": 100}),
-				    ], center=(-37.75, 175.4), zoom=11, style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
-							 
-			], md=12),
-		dbc.Col([
-			# dcc.Graph(id='forecasting_graph',figure={})
-			], md=0),
+			dcc.Graph(id='sentiment-subjectivity-geo',figure={})
+			], md=6),
 		], no_gutters=True,
 		style={'margin-bottom': '2px'}
 		),
@@ -305,6 +301,52 @@ def update_sent_pol_region_bar_graph(date_selected):
 	fig.add_trace(go.Bar(name='User',x=user_avg_sentiment_df["name"].str[:20],y=user_avg_sentiment_df["sentiment_polarity"], marker=dict(color="teal"), showlegend=True),row=1, col=2)
 	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
 	return fig
+
+@app.callback(
+Output('sentiment-polarity-geo' , 'figure'),
+Input('calendar_prompt','value'),
+ prevent_initial_call=False)
+def update_sentiment_polarity_geo(date_selected):
+	sentiment_polarity_geo_data_df=df.dropna(subset=['name', 'location'], how='any')
+	sentiment_polarity_geo_data_df=pd.DataFrame(sentiment_polarity_geo_data_df.groupby(['location'],as_index=False)['sentiment_polarity'].mean())
+	sentiment_polarity_geo_data_df.columns = ['ADMIN', 'sentiment_polarity']
+	sentiment_polarity_geo_df = geopandas.GeoDataFrame.from_features(country_geojson["features"]).merge(sentiment_polarity_geo_data_df, on="ADMIN").set_index("ADMIN")
+	sentiment_polarity_geo_df.rename(columns={'Admin': 'location'}, inplace=True)
+	# sentiment_polarity_geo_df=pd.read_csv(DATA_PATH.joinpath("sentiment_polarity_geo_data.csv"))
+	fig = px.choropleth_mapbox(sentiment_polarity_geo_df,
+                           geojson=sentiment_polarity_geo_df.geometry,
+                           locations=sentiment_polarity_geo_df.index,
+                           color="sentiment_polarity",
+#                            center={"lat": 45.5517, "lon": -73.7073},
+                           mapbox_style="carto-positron",
+                           zoom=0.5)
+	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
+	return fig
+
+
+@app.callback(
+Output('sentiment-subjectivity-geo' , 'figure'),
+Input('calendar_prompt','value'),
+ prevent_initial_call=False)
+def update_sentiment_subjectivity_geo(date_selected):
+	sentiment_subjectivity_geo_data_df=df.dropna(subset=['name', 'location'], how='any')
+	sentiment_subjectivity_geo_data_df=pd.DataFrame(sentiment_subjectivity_geo_data_df.groupby(['location'],as_index=False)['sentiment_subjectivity'].mean())
+	sentiment_subjectivity_geo_data_df.columns = ['ADMIN', 'sentiment_subjectivity']
+	sentiment_subjectivity_geo_df = geopandas.GeoDataFrame.from_features(country_geojson["features"]).merge(sentiment_subjectivity_geo_data_df, on="ADMIN").set_index("ADMIN")
+	sentiment_subjectivity_geo_df.rename(columns={'Admin': 'location'}, inplace=True)
+	# sentiment_subjectivity_geo_df=pd.read_csv(DATA_PATH.joinpath("sentiment_subjectivity_geo_data.csv"))
+	fig = px.choropleth_mapbox(sentiment_subjectivity_geo_df,
+                           geojson=sentiment_subjectivity_geo_df.geometry,
+                           locations=sentiment_subjectivity_geo_df.index,
+                           color="sentiment_subjectivity",
+#                            center={"lat": 45.5517, "lon": -73.7073},
+                           mapbox_style="carto-positron",
+                           zoom=0.75)
+	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
+	return fig
+
+
+
 
 	
 
