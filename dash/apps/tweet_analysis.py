@@ -112,11 +112,11 @@ layout=dbc.Container([
 		# start sidebar
 		dbc.Col([
 
-			dcc.Dropdown(id='country-promptn', multi=False, value='AMZN', placeholder='Select Region...',
+			dcc.Dropdown(id='country-promptn', multi=False, value='', placeholder='Select Region...',
 			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '15px'}),
 
-			dcc.Dropdown(id='user-prompt', multi=False, value='AMZN', placeholder='Select Users...',
+			dcc.Dropdown(id='user-prompt', multi=False, value='', placeholder='Select Users...',
 			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '15px'}),
 			# dcc.Dropdown(id='region-prompt',multi=True, 
