@@ -33,7 +33,6 @@ sentiment_subjectivity=round(df['sentiment_subjectivity'].mean(),2)
 
 # card definition
 number_of_tweets_card = [
-    # dbc.CardHeader("Countries",style={'text-align': 'center'}),
     dbc.CardBody(
         [
             html.H1(number_of_tweets, className="card-title"),
@@ -46,7 +45,6 @@ number_of_tweets_card = [
 ]
 
 favourites_count_card = [
-    # dbc.CardHeader("Population",style={'text-align': 'center'}),
     dbc.CardBody(
         [
             html.H1(favourites_count, className="card-title"),
@@ -60,7 +58,6 @@ favourites_count_card = [
 ]
 
 unique_users_count_card = [
-    # dbc.CardHeader("GDP Per Capita",style={'text-align': 'center'}),
     dbc.CardBody(
         [
             html.H1(unique_users_count, className="card-title"),
@@ -74,7 +71,6 @@ unique_users_count_card = [
 ]
 
 sentiment_polarity_card = [
-    # dbc.CardHeader("Expectancy",style={'text-align': 'center'}),
     dbc.CardBody(
         [
             html.H1(sentiment_polarity, className="card-title"),
@@ -119,17 +115,6 @@ layout=dbc.Container([
 			dcc.Dropdown(id='user-prompt', multi=False, value='', placeholder='Select Users...',
 			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
 			style={'margin-bottom': '15px'}),
-			# dcc.Dropdown(id='region-prompt',multi=True, 
-			# value=df['created_at'].head(5).unique(),
-			# options=[{'label':x,'value':x} for x in sorted(df['created_at'].unique())],
-			# # options=[{'label':x,'value':x} for x in sorted(df['location'].unique())],
-			# style={'margin-bottom': '10px'}),
-
-			# dcc.Dropdown(id='calendar_prompt',multi=True, 
-			# 	value=df['created_at'].unique(),
-			# options=[{'label':x,'value':x} for x in sorted(df['created_at'].unique())],
-			# style={'margin-bottom': '10px'}),
-
 			dcc.DatePickerRange(
 			    id='calendar_prompt',
 			    start_date_placeholder_text=min(df['created_at']),
@@ -138,18 +123,7 @@ layout=dbc.Container([
         		max_date_allowed=max(df['created_at']),
 			    display_format='YYYY-MM-DD'
 			),
-			# dcc.Input(
-		 #    id='calendar_prompt',
-		 #    # type='Date',
-		 #    # value=datetime.date.today()
-		 #    value=df['created_at'].unique()
-			# 	),
-
-			# dcc.RadioItems(id='xlog_multi_type', 
-   #              options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-   #              value='Linear',
-   #              labelStyle={'display': 'inline-block'},
-   #              style={'margin-bottom': '2px'})
+			
    			daq.Gauge( id='sentiment-polarity-gauge', label="Sentiment Polarity", 
 				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
 				showCurrentValue=True,
@@ -170,10 +144,6 @@ layout=dbc.Container([
 			style={'padding-left': '20px'}
 			),
 		html.Hr(),
-
-		# html.Div( 
-			# dbc.Row([
-
 			html.Div([
 			daq.Gauge( id='sentiment-subjectivity-gauge', label="Sentiment Subjectivity", 
 				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
@@ -183,35 +153,20 @@ layout=dbc.Container([
 			dcc.Graph(id='sent-polar', figure={},style={'width':'700px','float':'right'})
 			]),
 			
-			
-			 # md=9),
 		])
 	], no_gutters=True,
 	style={'margin-bottom': '1px'}),
 html.Hr(),
 # row 2 start
-	# dbc.Row([
-	# 	dbc.Col([
-	# 		# dcc.Graph(id='sent-pol-region-bar',figure={},style={'width':'700px'})
-	# 		dcc.Graph(id='sent-pol-region-bar',figure={})
-	# 		], md=6),
-	# 	dbc.Col([
-	# 		dcc.Graph(id='sent-pol-region-bar',figure={})
-	# 		], md=6),
-	# 	], no_gutters=True,
-	# 	style={'margin-bottom': '2px'}),
-	#row 2 end
 
 	# row 3 start
 	dbc.Row([
 		dbc.Col([
-			# dcc.Graph(id='sent-pol-region-bar',figure={})
 			], md=0),
 		dbc.Col([
 			dcc.Graph(id='sent-pol-region-user-bar',figure={})
 			], md=12),
 		dbc.Col([
-			# dcc.Graph(id='forecasting_graph',figure={})
 			], md=0),
 		], no_gutters=True,
 		style={'margin-bottom': '2px'}
@@ -238,8 +193,6 @@ html.Hr(),
 # row 1 start
 dbc.Row([
 	dbc.Col([
-		# dcc.Graph(id='table-fig', figure={})
-	
 		]),
 	], no_gutters=True),
 # row 1 end
@@ -263,17 +216,9 @@ dbc.Row([
 	fluid=True
 	)
 
-
-# @app.callback(
-# Output('sentiment-polarity-gauge' , 'value')
-# )
-# def update_sentiment_polarity_gauge_graph(value):
-# 	return value
-	
 @app.callback(
 Output('sent-polar' , 'figure'),
 Input('calendar_prompt','value'),
-# Input('calendar_prompt','end_date'),
  prevent_initial_call=False)
 def update_sentiment_polarity_line_graph(date_selected):
 	# dff=df[df['created_at'].isin([date_selected])]
@@ -344,74 +289,3 @@ def update_sentiment_subjectivity_geo(date_selected):
                            zoom=0.75)
 	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
 	return fig
-
-
-
-
-	
-
-# @app.callback(
-# Output('sent_pol_region_bar' , 'figure'),
-# Input('calendar_prompt','value'),
-# # Input('calendar_prompt','end_date'),
-#  # prevent_initial_call=False
-#  )
-# def update_sent_pol_reg_graph(region_selected):
-# 	dff=df[(df['created_at'] > min(df['created_at'])) & (df['created_at'] <= max(df['created_at']))]
-# 	fig=go.Figure()
-# 	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
-# 	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
-# 	# fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
-# 	return fig
-
-
-# @app.callback(
-# Output('line-fig2' , 'figure'),
-# Input('my-dpdn2', 'value'),
-# Input('xlog_multi_type', 'value'),
-# Input('year-dropdown', 'value'),
-# prevent_initial_call=False)
-# def update_multi_graph(multi_stock_slctd,xlog_multi_type,date_selected):
-# 	dff=df[df['Symbols'].isin(multi_stock_slctd) & df['year_month'].isin(date_selected)]	
-# 	figln=px.line(dff,x='Date', y='High',color='Symbols',height=400)
-# 	figln.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
-# 	figln.update_xaxes(rangeslider_visible=False,
-#     rangeselector=dict(
-#         buttons=list([
-#             dict(count=1, label="1m", step="month", stepmode="backward"),
-#             dict(count=6, label="6m", step="month", stepmode="backward"),
-#             dict(count=1, label="YTD", step="year", stepmode="todate"),
-#             dict(count=1, label="1y", step="year", stepmode="backward"),
-#             dict(step="all")
-#         			])
-#     				)
-# 				)
-# 	figln.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
-# 	return figln
-
-# @app.callback(
-# Output('stackedbar-fig' , 'figure'),
-# Input('my-dpdn2', 'value'),
-# Input('year-dropdown', 'value'),
-# Input('xlog_multi_type', 'value'),
-# prevent_initial_call=False)
-# def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
-# 	stock_stacked_df=pd.DataFrame(df.groupby(['year_month','Symbols'],as_index=False)['High'].mean()) #.sort_values(by=['gdpPercap'], ascending=True)
-# 	dff=stock_stacked_df[stock_stacked_df['Symbols'].isin(multi_stock_slctd) & stock_stacked_df['year_month'].isin(date_selected)]	
-# 	stacked_barchart=px.bar(dff,x='year_month',y='High',color='Symbols',text='High',height=400)
-# 	stacked_barchart.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
-# 	stacked_barchart.update_xaxes(rangeslider_visible=False,
-#     rangeselector=dict(
-#         buttons=list([
-#             dict(count=1, label="1m", step="month", stepmode="backward"),
-#             dict(count=6, label="6m", step="month", stepmode="backward"),
-#             dict(count=1, label="YTD", step="year", stepmode="todate"),
-#             dict(count=1, label="1y", step="year", stepmode="backward"),
-#             dict(step="all")
-#         			])
-#     				)
-# 				)
-# 	stacked_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
-
-# 	return stacked_barchart
-
