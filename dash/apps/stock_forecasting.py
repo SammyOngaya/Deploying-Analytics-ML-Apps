@@ -152,7 +152,6 @@ layout=dbc.Container([
 # row 1 start
 dbc.Row([
 	dbc.Col([
-		# dcc.Graph(id='table-fig', figure={})
 	
 		]),
 	], no_gutters=True),
@@ -230,19 +229,6 @@ def update_multi_graph(multi_stock_slctd,xlog_multi_type,date_selected):
 	figln.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 	return figln
 
-# @app.callback(
-# Output('table-fig' , 'figure'),
-# Input('my-dpdn2', 'value'),
-# Input('year-dropdown', 'value'),
-# prevent_initial_call=False)
-# def update_table_graph(multi_stock_slctd,date_selected):
-# 	dff=df[df['Symbols'].isin(multi_stock_slctd) & df['year_month'].isin(date_selected)]	
-# 	table_graph = go.Figure(data=[go.Table(header=dict(values=list(dff[['Date','Symbols','High','Low']].columns),fill_color='paleturquoise',
-#                 align='left'),cells=dict(values=[dff.Date, dff.Symbols, dff.High, dff.Low],
-#                fill_color='lavender',align='left'))])
-# 	table_graph.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
-# 	return table_graph
-
 	# 
 @app.callback(
 Output('stackedbar-fig' , 'figure'),
@@ -270,122 +256,3 @@ def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
 
 	return stacked_barchart
 
-
-# forecasting graph
-# @app.callback(
-# Output('forecasting_graph_table' , 'figure'),
-# Input('my-dpdn', 'value'),
-# Input('forecasting-frequency', 'value')
-# )
-# def update_forecasting_graph(stock_slctd,forecasting_frequency):
-# 	df_fbp=df
-# 	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
-# 	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
-# 	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
-# 	df_fbp=df_fbp[['Date','High']]
-# 	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
-# 	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
-# 	estimated_months=int(forecasting_frequency)
-# 	df_fbp = df_fbp[:-estimated_months]
-
-# 	#1. Uncomment the below two lines when using trained model
-# 	# with open('/app/apps/serialized_model.json', 'r') as fin:
-# 	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
-# 	#2. Train your model in real-time
-# 	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
-# 	model.fit(df_fbp)
-# 	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
-# 	df_forecast_2 = model.predict(df_forecast_2)
-	
-# 	fig = make_subplots(rows=1, cols=2,shared_xaxes=True,vertical_spacing=0.03,specs=[[{"type": "scatter"},{"type": "table"}]],
-#     column_width=[0.8, 0.4],horizontal_spacing=0)
-
-# 	fig.add_trace(go.Scatter(x=df_fbp['ds'], y=df_fbp['y'], name='Actual',line = dict(color='firebrick')),row=1, col=1) #dash='dash' to add line style
-# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat'], name='Trend',line = dict(color='orange')),row=1, col=1)
-# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green'), fill = 'tonexty'),row=1, col=1)
-# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue'),fill = 'tonexty'),row=1, col=1)
-# 	fig.add_trace( go.Table(header=dict(values=df_forecast_2[['ds','trend','yhat_lower','yhat_upper','yhat']].columns,
-# 	            font=dict(size=10),align="left"),cells=dict(values=[df_forecast_2.ds, round(df_forecast_2.trend,2), round(df_forecast_2.yhat_lower,2), round(df_forecast_2.yhat_upper,2),round(df_forecast_2.yhat,2)],
-# 	            align = "left")),row=1, col=2)
-# 	fig.update_layout(dict(title=stock_slctd,xaxis=dict(title = 'Period', ticklen=2, zeroline=False)),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
-# 	fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),title={'text': stock_slctd,'y':0.75,'x':0.4,'xanchor': 'center','yanchor': 'middle'})
-	
-# 	return fig
-
-
-
-
-
-####### Training model for individual visualization. This is an inefficient way. The best alternative is to train a single model and use subplot to render the visualization as above
-# # forecasting graph
-# @app.callback(
-# Output('forecasting_graph' , 'figure'),
-# Input('my-dpdn', 'value'),
-# Input('year-dropdown', 'value')
-# )
-# def update_forecasting_graph(stock_slctd,date_selected):
-# 	df_fbp=df
-# 	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
-# 	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
-# 	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
-# 	df_fbp=df_fbp[['Date','High']]
-# 	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
-# 	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
-# 	estimated_months=6
-# 	df_fbp = df_fbp[:-estimated_months]
-
-# 	#1. Uncomment the below two lines when using trained model
-# 	# with open('/app/apps/serialized_model.json', 'r') as fin:
-# 	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
-# 	#2. Train your model in real-time
-# 	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
-# 	model.fit(df_fbp)
-
-# 	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
-# 	df_forecast_2 = model.predict(df_forecast_2)
-# 	# plot line graph
-# 	fig=go.Figure()
-# 	fig.add_trace(go.Scatter(x=df_fbp['ds'], y=df_fbp['y'], name='Actual',line = dict(color='firebrick'))) #dash='dash' to add line style
-# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat'], name='Trend',line = dict(color='orange')))
-# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_upper'], name='Upper Band',line = dict(color='green'), fill = 'tonexty'))
-# 	fig.add_trace(go.Scatter(x=df_forecast_2['ds'], y=df_forecast_2['yhat_lower'], name='Lower Band',line = dict(color='royalblue'),fill = 'tonexty'))
-# 	fig.update_layout(dict(title=stock_slctd,xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
-# 	# fig.add_annotation(align='center',valign='top',text=stock_slctd,showarrow=False,arrowhead=1)
-	
-# 	return fig
-
-
-
-# # # forecasting table
-# @app.callback(
-# Output('forecasting_table' , 'figure'),
-# Input('my-dpdn', 'value'),
-# Input('year-dropdown', 'value')
-# )
-# def update_forecasting_table(stock_slctd,date_selected):
-# 	df_fbp=df
-# 	df_fbp['Date'] = pd.to_datetime(df_fbp['Date'], format='%Y-%m-%d')
-# 	df_fbp['High'] = pd.to_numeric(df_fbp['High'],errors='ignore')
-# 	df_fbp=df_fbp[df_fbp['Symbols'].isin([stock_slctd])]
-# 	df_fbp=df_fbp[['Date','High']]
-# 	df_fbp = df_fbp.rename(columns={'Date': 'ds', 'High': 'y'})
-# 	df_fbp = df_fbp[df_fbp['ds']>='2020-01-02']
-# 	estimated_months=6
-# 	df_fbp = df_fbp[:-estimated_months]
-
-# 	#1. Uncomment the below two lines when using trained model
-# 	# with open('/app/apps/serialized_model.json', 'r') as fin:
-# 	# 	model = model_from_json(json.load(fin))  # Load model after you've trained it  
-# 	#2. Train your model in real-time
-# 	model = Prophet(changepoint_prior_scale=0.5,yearly_seasonality=True,daily_seasonality=True)
-# 	model.fit(df_fbp)
-
-# 	df_forecast_2 = model.make_future_dataframe(periods= estimated_months, freq='M')
-# 	df_forecast_2 = model.predict(df_forecast_2)
-# 	# plot table
-# 	table_forecasting = go.Figure(data=[go.Table(header=dict(values=list(df_forecast_2[['ds','trend','yhat_lower','yhat_upper','yhat']].columns),fill_color='paleturquoise',
-#                 align='center'),cells=dict(values=[df_forecast_2.ds, df_forecast_2.trend, df_forecast_2.yhat_lower, df_forecast_2.yhat_upper,df_forecast_2.yhat],
-#                fill_color='lavender',align='left'))])
-# 	table_forecasting.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
-	
-# 	return table_forecasting
