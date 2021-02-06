@@ -2,7 +2,7 @@
 This repository contains projects and assets on deploying analytics and Machine Learning use-cases developed in python. We use Python based packages to create the use-cases and deploy through falsk and dash library The repo has three projects: 1. World GDP Analysis 2. Stock Market Analysis 3. Tweet Analysis. 
 
 ## 1. World GDP Analysis
-This project provides a simple way of analysisng data using pandas and creating visualizations using dash. The data source for the use-case is gapminder which is provided as dash in-built dataset. The app is hosted on heroku ![World GDP Analysis](https://galaxyanalytica.herokuapp.com/apps/world_gdp_analysis)
+This project provides a simple way of analysisng data using pandas and creating visualizations using dash. The data source for the use-case is gapminder which is provided as dash in-built dataset. The app is hosted on heroku [World GDP Analysis](https://galaxyanalytica.herokuapp.com/apps/world_gdp_analysis)
 ![World GDP Analysis](https://github.com/SammyOngaya/Deploying-Analytics-ML-Apps/blob/master/dash/assets/world-gdp-analysis-app.PNG)
 
 ## 2. Stock Market Analysis
