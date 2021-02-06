@@ -12,4 +12,4 @@ This use-case analyses stock-markets and deploys a forecasting model to predict 
 ## 3. Tweet Analysis
 
 This project involves extracting tweets from the twitter website, cleaning and transforming the tweets. We analyse and visualize various aspects of the tweets. We model the sentiments of the tweets using textblob and visualize the sentiments. We create geo-spacial representations of the tweets using mapbox and geopandas. The app is hosted on heroku <a href='https://galaxyanalytica.herokuapp.com/apps/tweet_analysis'>Tweets Analysis</a>
-![alt text](http://url/to/img.png)
+![Tweet Analysis](https://github.com/SammyOngaya/Deploying-Analytics-ML-Apps/blob/master/dash/assets/tweet-sentiment-analysis-app.PNG)
