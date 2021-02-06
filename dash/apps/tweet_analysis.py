@@ -257,7 +257,6 @@ def update_sentiment_polarity_geo(date_selected):
 	sentiment_polarity_geo_data_df.columns = ['ADMIN', 'sentiment_polarity']
 	sentiment_polarity_geo_df = geopandas.GeoDataFrame.from_features(country_geojson["features"]).merge(sentiment_polarity_geo_data_df, on="ADMIN").set_index("ADMIN")
 	sentiment_polarity_geo_df.rename(columns={'Admin': 'location'}, inplace=True)
-	# sentiment_polarity_geo_df=pd.read_csv(DATA_PATH.joinpath("sentiment_polarity_geo_data.csv"))
 	fig = px.choropleth_mapbox(sentiment_polarity_geo_df,
                            geojson=sentiment_polarity_geo_df.geometry,
                            locations=sentiment_polarity_geo_df.index,
@@ -279,7 +278,6 @@ def update_sentiment_subjectivity_geo(date_selected):
 	sentiment_subjectivity_geo_data_df.columns = ['ADMIN', 'sentiment_subjectivity']
 	sentiment_subjectivity_geo_df = geopandas.GeoDataFrame.from_features(country_geojson["features"]).merge(sentiment_subjectivity_geo_data_df, on="ADMIN").set_index("ADMIN")
 	sentiment_subjectivity_geo_df.rename(columns={'Admin': 'location'}, inplace=True)
-	# sentiment_subjectivity_geo_df=pd.read_csv(DATA_PATH.joinpath("sentiment_subjectivity_geo_data.csv"))
 	fig = px.choropleth_mapbox(sentiment_subjectivity_geo_df,
                            geojson=sentiment_subjectivity_geo_df.geometry,
                            locations=sentiment_subjectivity_geo_df.index,

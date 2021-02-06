@@ -11,14 +11,6 @@ import pathlib
 
 from app import app
 from app import server
-# from apps import stock_forecasting
-
-
-# PATH=pathlib.Path(__file__).parent
-# DATA_PATH=PATH.joinpath("../assets").resolve()
-
-# df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
-
 
 
 layout=dbc.Container([
@@ -54,10 +46,7 @@ layout=dbc.Container([
                   ] 
                 	),
 			style={
-            'margin-top': '30px',
-            # 'background-image': url("stock-market-analysis.png"),
-            # 'height': '300px',
-            # 'backgroundColor': 'rgba(120,0,0,0.4)'
+            'margin-top': '30px'
             },
                 	md=4),
    #2.
@@ -67,9 +56,7 @@ layout=dbc.Container([
                     ]
                   ),
       style={
-            'margin-top': '30px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
+            'margin-top': '30px'
             },
                   md=4),
    #3. doughnut_pie_chart_with_center
@@ -80,9 +67,7 @@ layout=dbc.Container([
               ]
                   ),
       style={
-            'margin-top': '30px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
+            'margin-top': '30px'
             },
                   md=4),
 
@@ -95,33 +80,18 @@ layout=dbc.Container([
                         dbc.Col(html.Div(
      
                   ),
-      # style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
                   md=4),
 
     #5. 
                    dbc.Col(html.Div(
      
                   ),
-      # style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
                   md=4),
 
     # 6
                          dbc.Col(html.Div( 
 
                   ),
-      # style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
                   md=4),
             ]
         ),

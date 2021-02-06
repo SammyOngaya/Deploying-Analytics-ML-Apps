@@ -12,17 +12,6 @@ from app import app
 from app import server
 from apps import stock_forecasting
 
-
-
-# app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],
-#    meta_tags=[
-#         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-#     ]
-#     )
-# server=app.server
-
-
-
 # Load and prepare data
 df2 = px.data.gapminder()
 gdp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent','year'],as_index=False)['gdpPercap'].mean())
@@ -180,11 +169,6 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
                 	md=4),
    #2.
             dbc.Col(html.Div(
@@ -194,11 +178,6 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
                 	md=4),
    #3. doughnut_pie_chart_with_center
                 dbc.Col(html.Div(
@@ -208,11 +187,7 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+
                 	md=4),
 
             ]
@@ -229,11 +204,7 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+
                 	md=7),
 
     #5. 
@@ -245,11 +216,7 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+
                 	md=5),
             ]
         ),
@@ -264,11 +231,7 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+
                 	md=4),
 
 	#7.  
@@ -280,11 +243,7 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+
                 	md=4),
     #8.
                 dbc.Col(html.Div(
@@ -294,11 +253,7 @@ layout=dbc.Container([
 		    config={'displayModeBar': False }
 		    )
                 	),
-			# style={
-   #          'margin-top': '2px',
-   #          'height': '300px',
-   #          'backgroundColor': 'rgba(120,0,0,0.4)'
-   #          },
+                
                 	md=4),
             ]
         ),
