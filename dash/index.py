@@ -10,7 +10,7 @@ import pandas as pd
 
 from app import app
 from app import server
-from apps import stock_forecasting,world_gdp_analysis,home,tweet_analysis
+from apps import stock_forecasting,world_gdp_analysis,home,tweet_analysis,topic_modeling
 
 
 app.layout = html.Div([
@@ -32,6 +32,8 @@ def display_page(pathname):
         return home.layout
     elif pathname == '/apps/tweet_analysis':
         return tweet_analysis.layout
+    elif pathname == '/apps/topic_modeling':
+        return topic_modeling.layout
     else:
         return ''
 
