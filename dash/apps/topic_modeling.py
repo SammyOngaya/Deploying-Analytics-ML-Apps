@@ -1,203 +1,160 @@
-import datetime
-import pandas as pd
 import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
+from dash.dependencies import Input, Output,State
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from dash.dependencies import Input, Output,State
-import dash_daq as daq #pip install dash-daq
-import geopandas
-import json
-# import dash_leaflet as dl
-# import dash_leaflet.express as dlx
-import pathlib
+import pandas as pd
 
 from app import app
 from app import server
+from apps import stock_forecasting
 
-PATH=pathlib.Path(__file__).parent
-DATA_PATH=PATH.joinpath("../datasets").resolve()
-df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
+# Load and prepare data
+df2 = px.data.gapminder()
+gdp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent','year'],as_index=False)['gdpPercap'].mean())
+yearly_gdp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['gdpPercap'].mean()).sort_values(by=['gdpPercap'], ascending=True)
+lifeExp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
+yearly_lifeExp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
+yearly_avg_lifeExp_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['lifeExp'].mean())
+yearly_pop_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['pop'].sum())
+pop_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['pop'].mean())
+df3=df2[['year', 'iso_alpha', 'lifeExp', 'gdpPercap']]
+# 
 
-with open(DATA_PATH.joinpath("countries.geojson")) as response:
-    country_geojson = json.load(response)
+# dash visualizations
+grouped_barchart=px.bar(yearly_gdp_df,x='year',y='gdpPercap',color='continent',text='gdpPercap',height=350)
+grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
-number_of_tweets=df['name'].count()
-favourites_count=round(df['favourites_count'].sum()/1000000,2)
-unique_users_count=df['name'].nunique()
-sentiment_polarity=round(df['sentiment_polarity'].mean(),2)
-sentiment_subjectivity=round(df['sentiment_subjectivity'].mean(),2)
+barchart=px.bar(lifeExp_df,x='continent',y='lifeExp',text='lifeExp',color='lifeExp',height=350)
+barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
-# card definition
-number_of_tweets_card = [
-    dbc.CardBody(
-        [
-            html.H1(number_of_tweets, className="card-title"),
-            html.P("Tweets Count",
-                className="card-text",
-            ),
-        ],
-        style={'text-align': 'center'}
-    ),
-]
+pop_barchart=px.bar(pop_df,y='continent',x='pop',text='pop',height=350)
+pop_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
-favourites_count_card = [
-    dbc.CardBody(
-        [
-            html.H1(favourites_count, className="card-title"),
-            html.P(
-                "Tweets Likes (Mn)",
-                className="card-text",
-            ),
-        ],
-        style={'text-align': 'center'}
-    ),
-]
+# donought pie chart with text at center
+doughnut_pie_chart_with_center = go.Figure(data=[go.Pie(labels=df2['continent'].tolist(), values=df2['pop'].tolist(), hole=.3)])
+doughnut_pie_chart_with_center.update_layout(showlegend=False,autosize=True,annotations=[dict(text='continent',  font_size=20, showarrow=False)],margin=dict(t=0,b=0,l=0,r=0),height=350)
 
-unique_users_count_card = [
-    dbc.CardBody(
-        [
-            html.H1(unique_users_count, className="card-title"),
-            html.P(
-                "Unique Users Tweeted",
-                className="card-text",
-            ),
-        ],
-        style={'text-align': 'center'}
-    ),
-]
+# linegraph
+life_exp_linegraph = px.line(yearly_lifeExp_df, x="year", y="lifeExp",color='continent',height=350)
+life_exp_linegraph.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
 
-sentiment_polarity_card = [
-    dbc.CardBody(
-        [
-            html.H1(sentiment_polarity, className="card-title"),
-            html.P(
-                "Avg. Sentiment Polarity",
-                className="card-text",
-            ),
-        ],
-        style={'text-align': 'center'}
-    ),
-]
-#end card definition
+# line and bar
+# Create figure with secondary y-axis
+line_bar_pop_gdp = make_subplots(specs=[[{"secondary_y": True}]])
+line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"], name="life expectancy"), secondary_y=False)
+line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_pop_df["year"], y=yearly_pop_df["pop"], name="population"), secondary_y=True)
+line_bar_pop_gdp.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
+
+# cards
+avg_gdp_per_capita=round(df2[df2['year']==2007]['gdpPercap'].mean(),2)
+avg_life_exp=round(df2[df2['year']==2007]['lifeExp'].mean(),2)
+total_population=round(df2[df2['year']==2007]['pop'].sum()/1000000000,2)
+countries_analysed=df2[df2['year']==2007].groupby(['country'])['country'].nunique().sum()
+
+#boxplot
+gdp_boxplot = px.box(df2, x="year",y="lifeExp",height=350)
+gdp_boxplot.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+
+# table
+table_graph = go.Figure(data=[go.Table(header=dict(values=list(df3.columns),fill_color='paleturquoise',
+                align='left'),cells=dict(values=[df3.year, df3.iso_alpha, df3.lifeExp, df3.gdpPercap],
+               fill_color='lavender',align='left'))])
+table_graph.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
 
 
-#layout
+
+
+
 layout=dbc.Container([
-
 	# navigation
 	dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True, href="/apps/world_gdp_analysis")),
-        dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True, href="/apps/stock_forecasting")),
-        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True, href="/apps/tweet_analysis")),
-        dbc.NavItem(dbc.NavLink("Tweets Topic Modeling", active=True, href="/apps/topic_modeling"))
+        dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
+        dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
+        dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True,href="/apps/tweet_analysis")),
+        dbc.NavItem(dbc.NavLink("Topic Modeling", active=True, href="/apps/topic_modeling"))
     ], 
     brand="Topic Modeling",
     brand_href="/apps/home",
     color="primary",
     dark=True,
-    style={'margin-bottom': '5px'}
-	),#end navigation
+    style={'margin-bottom': '2px'}
 
-# prompts row
-	dbc.Row([
-		# start sidebar
-		dbc.Col([
+),#end navigation
 
-			dcc.Dropdown(id='country-promptn', multi=False, value='', placeholder='Select Region...',
-			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
-			style={'margin-bottom': '15px'}),
+	#body
+	 html.Div(
+    [
 
-			dcc.Dropdown(id='user-prompt', multi=False, value='', placeholder='Select Users...',
-			# options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
-			style={'margin-bottom': '15px'}),
-			dcc.DatePickerRange(
-			    id='calendar_prompt',
-			    start_date_placeholder_text=min(df['created_at']),
-			    end_date_placeholder_text='Select end date',
-			    min_date_allowed=datetime.date(2021,1,20),
-        		max_date_allowed=max(df['created_at']),
-			    display_format='YYYY-MM-DD'
-			),
-			
-   			daq.Gauge( id='sentiment-polarity-gauge', label="Sentiment Polarity", 
-				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
-				showCurrentValue=True,
-				max=1,min=-1,
-				value=sentiment_polarity,style={'width':'150px','float':'right','padding-right': '120px'})
-		],
-		md=3,
-		style={'margin-bottom': '2px','margin-top': '2px','margin-left': '0px','border-style': 'ridge','border-color': 'green'}
-		),
-		# end sidebar
-	dbc.Col([
-		html.Div(dbc.Row([
-			html.Div(dbc.Card(number_of_tweets_card, color="info", inverse=True)),
-			html.Div(dbc.Card(favourites_count_card, color="info", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(unique_users_count_card, color="info", inverse=True),style={'padding-left': '50px'}),
-			html.Div(dbc.Card(sentiment_polarity_card, color="info", inverse=True),style={'padding-left': '50px'})
-			]),
-			style={'padding-left': '20px'}
-			),
-		html.Hr(),
-			html.Div([
-			daq.Gauge( id='sentiment-subjectivity-gauge', label="Sentiment Subjectivity", 
-				color={"gradient":True,"ranges":{"red":[-1.00,0.03],"blue":[0.03,0.50],"green":[0.50,1.00]}},
-				showCurrentValue=True,
-				max=1,min=-1,
-				value=sentiment_subjectivity,style={'width':'150px','float':'left','padding-left': '80px'}),
-			dcc.Graph(id='sent-polar', figure={},style={'width':'700px','float':'right'})
-			]),
-			
-		])
-	], no_gutters=True,
-	style={'margin-bottom': '1px'}),
-html.Hr(),
-# row 2 start
+    # Graphs
+    #1.
+   #      dbc.Row(
+   #          [
+   #              dbc.Col(html.Div(
+   #              	  dcc.Graph(
+		 #    id='grouped-bar-graph',
+		 #    figure=grouped_barchart,
+		 #    config={'displayModeBar': False }
+		 #    )
+   #              	),
+   #              	md=4),
+   # #2.
+   #          dbc.Col(html.Div(
+   #          	dcc.Graph(
+		 #    id='barchart',
+		 #    figure=barchart,
+		 #    config={'displayModeBar': False }
+		 #    )
+   #              	),
+   #              	md=4),
+   # #3. doughnut_pie_chart_with_center
+   #              dbc.Col(html.Div(
+   #              dcc.Graph(
+		 #    id='doughnut_pie_chart_with_center',
+		 #    figure=doughnut_pie_chart_with_center,
+		 #    config={'displayModeBar': False }
+		 #    )
+   #              	),
 
-	# row 3 start
-	dbc.Row([
-		dbc.Col([
-			], md=0),
-		dbc.Col([
-			dcc.Graph(id='sent-pol-region-user-bar',figure={})
-			], md=12),
-		dbc.Col([
-			], md=0),
-		], no_gutters=True,
-		style={'margin-bottom': '2px'}
-		),
-	#row 3 end
+   #              	md=4),
 
-	# row 3 start
-	dbc.Row([
-		dbc.Col([
-			dcc.Graph(id='sentiment-polarity-geo',figure={})
-			], md=6),
-		dbc.Col([
-				 
-			], md=0),
-		dbc.Col([
-			dcc.Graph(id='sentiment-subjectivity-geo',figure={})
-			], md=6),
-		], no_gutters=True,
-		style={'margin-bottom': '2px'}
-		),
-	#row 3 end
+   #          ]
+   #      ),
 
+# 4. 
+    #     dbc.Row(
+    #         [
+    #             dbc.Col(html.Div(
 
-# row 1 start
-dbc.Row([
-	dbc.Col([
-		]),
-	], no_gutters=True),
-# row 1 end
+    #             dcc.Graph(
+		  #   id='life_exp_linegraph',
+		  #   figure=life_exp_linegraph,
+		  #   config={'displayModeBar': False }
+		  #   )
+    #             	),
 
-	  # footer
+    #             	md=7),
+
+    # #5. 
+    #        dbc.Col(html.Div(
+
+    #             dcc.Graph(
+		  #   id='pop_barchart',
+		  #   figure=pop_barchart,
+		  #   config={'displayModeBar': False }
+		  #   )
+    #             	),
+
+    #             	md=5),
+    #         ]
+    #     ),
+  
+
+        # footer
  		dbc.Row(
             [
                 dbc.Col(html.Div("@galaxydataanalytics "),
@@ -210,80 +167,16 @@ dbc.Row([
             ]
         ),
         #end footer
-
+    ],
+        style={
+            'padding-left': '3px',
+            'padding-right': '3px'
+            },
+)
+	#end body
 
 	],
 	fluid=True
 	)
 
-@app.callback(
-Output('sent-polar' , 'figure'),
-Input('calendar_prompt','value'),
- prevent_initial_call=False)
-def update_sentiment_polarity_line_graph(date_selected):
-	# dff=df[df['created_at'].isin([date_selected])]
-	dff=df[(df['created_at'] > min(df['created_at'])) & (df['created_at'] <= max(df['created_at']))]
-	fig=go.Figure()
-	fig.add_trace(go.Scatter(x=dff['created_at'], y=dff['sentiment_polarity'], name='Polarity',line = dict(color='skyblue'))) 
-	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(title = 'Period', ticklen=2, zeroline=False)))
-	# fig.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
-	return fig
 
-@app.callback(
-Output('sent-pol-region-user-bar' , 'figure'),
-Input('calendar_prompt','value'),
- prevent_initial_call=False)
-def update_sent_pol_region_bar_graph(date_selected):
-	df_new=df.dropna(subset=['name', 'location'], how='any')
-	regional_avg_sentiment_df=pd.DataFrame(df_new.groupby(['location'],as_index=False)['sentiment_polarity'].mean()).head(50)
-	regional_avg_sentiment_df=regional_avg_sentiment_df[(regional_avg_sentiment_df['sentiment_polarity'] != 0.000)]
-	user_avg_sentiment_df=pd.DataFrame(df_new.groupby(['name'],as_index=False)['sentiment_polarity'].mean()).head(50)
-	user_avg_sentiment_df=user_avg_sentiment_df[(user_avg_sentiment_df['sentiment_polarity'] != 0.000)]
-	# dff=regional_avg_sentiment_df[regional_avg_sentiment_df['location'].isin([region])]
-	fig = make_subplots(rows=1, cols=2,shared_xaxes=False,shared_yaxes=True,vertical_spacing=0.03,specs=[[{"type": "bar"},{"type": "bar"}]],
-	    column_width=[50, 50],horizontal_spacing=0.015)
-	fig.add_trace(go.Bar(name='Region',x=regional_avg_sentiment_df['location'].str[:20],y=regional_avg_sentiment_df['sentiment_polarity'],marker=dict(color="skyblue"), showlegend=True),row=1, col=1)
-	fig.add_trace(go.Bar(name='User',x=user_avg_sentiment_df["name"].str[:20],y=user_avg_sentiment_df["sentiment_polarity"], marker=dict(color="teal"), showlegend=True),row=1, col=2)
-	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
-	return fig
-
-@app.callback(
-Output('sentiment-polarity-geo' , 'figure'),
-Input('calendar_prompt','value'),
- prevent_initial_call=False)
-def update_sentiment_polarity_geo(date_selected):
-	sentiment_polarity_geo_data_df=df.dropna(subset=['name', 'location'], how='any')
-	sentiment_polarity_geo_data_df=pd.DataFrame(sentiment_polarity_geo_data_df.groupby(['location'],as_index=False)['sentiment_polarity'].mean())
-	sentiment_polarity_geo_data_df.columns = ['ADMIN', 'sentiment_polarity']
-	sentiment_polarity_geo_df = geopandas.GeoDataFrame.from_features(country_geojson["features"]).merge(sentiment_polarity_geo_data_df, on="ADMIN").set_index("ADMIN")
-	sentiment_polarity_geo_df.rename(columns={'Admin': 'location'}, inplace=True)
-	fig = px.choropleth_mapbox(sentiment_polarity_geo_df,
-                           geojson=sentiment_polarity_geo_df.geometry,
-                           locations=sentiment_polarity_geo_df.index,
-                           color="sentiment_polarity",
-#                            center={"lat": 45.5517, "lon": -73.7073},
-                           mapbox_style="carto-positron",
-                           zoom=0.5)
-	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
-	return fig
-
-
-@app.callback(
-Output('sentiment-subjectivity-geo' , 'figure'),
-Input('calendar_prompt','value'),
- prevent_initial_call=False)
-def update_sentiment_subjectivity_geo(date_selected):
-	sentiment_subjectivity_geo_data_df=df.dropna(subset=['name', 'location'], how='any')
-	sentiment_subjectivity_geo_data_df=pd.DataFrame(sentiment_subjectivity_geo_data_df.groupby(['location'],as_index=False)['sentiment_subjectivity'].mean())
-	sentiment_subjectivity_geo_data_df.columns = ['ADMIN', 'sentiment_subjectivity']
-	sentiment_subjectivity_geo_df = geopandas.GeoDataFrame.from_features(country_geojson["features"]).merge(sentiment_subjectivity_geo_data_df, on="ADMIN").set_index("ADMIN")
-	sentiment_subjectivity_geo_df.rename(columns={'Admin': 'location'}, inplace=True)
-	fig = px.choropleth_mapbox(sentiment_subjectivity_geo_df,
-                           geojson=sentiment_subjectivity_geo_df.geometry,
-                           locations=sentiment_subjectivity_geo_df.index,
-                           color="sentiment_subjectivity",
-#                            center={"lat": 45.5517, "lon": -73.7073},
-                           mapbox_style="carto-positron",
-                           zoom=0.75)
-	fig.update_layout(dict(autosize=True,margin=dict(t=0,b=0,l=0,r=0),xaxis=dict(ticklen=2, zeroline=False),legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),))
-	return fig
