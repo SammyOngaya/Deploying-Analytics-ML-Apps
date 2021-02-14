@@ -86,6 +86,8 @@ layout=dbc.Container([
 
 ),#end navigation
 
+# html.Iframe(src="http://localhost:8866/",style={"height": "1067px", "width": "100%"}),
+
 	#body
 	 html.Div(
     [

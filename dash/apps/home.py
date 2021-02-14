@@ -20,7 +20,8 @@ layout=dbc.Container([
         dbc.NavItem(dbc.NavLink("World GDP Analysis", active=True,href="/apps/world_gdp_analysis")),
         dbc.NavItem(dbc.NavLink("Stock Market Analysis", active=True,href="/apps/stock_forecasting")),
         dbc.NavItem(dbc.NavLink("Tweets Analysis", active=True,href="/apps/tweet_analysis")),
-        dbc.NavItem(dbc.NavLink("Topic Modeling", active=True, href="/apps/topic_modeling"))
+        dbc.NavItem(dbc.NavLink("Topic Modeling", active=True, href="http://localhost:8866/#topic=2&lambda=1&term="))
+        # html.Div(<a href="http://localhost:8866/#topic=2&lambda=1&term=">Topic Modeling</a>)
     ], 
     brand="Galaxy Analytics Dashbords",
     brand_href="/apps/home",
