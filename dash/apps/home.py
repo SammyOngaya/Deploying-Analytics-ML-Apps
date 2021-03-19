@@ -43,8 +43,8 @@ layout=dbc.Container([
             [
                 dbc.Col(html.Div([
                   html.H6("World Gdp and Life Expectancy Analysis"),
-                  html.Img(src=app.get_asset_url('world-gdp-analysis.png'), style={'height':'100%', 'width':'100%'})  
-                  ] 
+                  html.Img(src=app.get_asset_url('world-gdp-analysis.PNG'), style={'height':'100%', 'width':'100%'})  
+                  ]  
                 	),
 			style={
             'margin-top': '30px'

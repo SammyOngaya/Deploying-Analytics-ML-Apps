@@ -8,62 +8,90 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
 
-from app import app
-from app import server
+from app import app, server
 from apps import stock_forecasting
 
 # Load and prepare data
-df2 = px.data.gapminder()
-gdp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent','year'],as_index=False)['gdpPercap'].mean())
-yearly_gdp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['gdpPercap'].mean()).sort_values(by=['gdpPercap'], ascending=True)
-lifeExp_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
-yearly_lifeExp_df=pd.DataFrame(df2.groupby(['year','continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
-yearly_avg_lifeExp_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['lifeExp'].mean())
-yearly_pop_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['pop'].sum())
-pop_df=pd.DataFrame(df2[df2['year']==2007].groupby(['continent'],as_index=False)['pop'].mean())
-df3=df2[['year', 'iso_alpha', 'lifeExp', 'gdpPercap']]
+# df2 = px.data.gapminder()
+df = px.data.gapminder()
+gdp_df=pd.DataFrame(df[df['year']==2007].groupby(['continent','year'],as_index=False)['gdpPercap'].mean())
+
+
+# yearly_pop_df=pd.DataFrame(df2.groupby(['year'],as_index=False)['pop'].sum())
+# df3=df2[['year', 'iso_alpha', 'lifeExp', 'gdpPercap']]
 # 
 
 # dash visualizations
-grouped_barchart=px.bar(yearly_gdp_df,x='year',y='gdpPercap',color='continent',text='gdpPercap',height=350)
-grouped_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0)) #use barmode='stack' when stacking,
 
-barchart=px.bar(lifeExp_df,x='continent',y='lifeExp',text='lifeExp',color='lifeExp',height=350)
-barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+def gdp_per_capita_by_continent(df):
+    colors=['crimson','teal','skyblue','orange','green']
+    yearly_gdp_df=pd.DataFrame(df.groupby(['year','continent'],as_index=False)['gdpPercap'].mean()).sort_values(by=['gdpPercap'], ascending=True)
+    yearly_gdp_df=yearly_gdp_df.round(2)
+    fig=px.bar(yearly_gdp_df,x='year',y='gdpPercap',color='continent',text='gdpPercap',height=350,color_discrete_sequence=colors,title='GDP Per Capita by Continent')
+    fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=30,b=0,l=0,r=0)) #use barmode='stack' when stacking,
+    return fig
 
-pop_barchart=px.bar(pop_df,y='continent',x='pop',text='pop',height=350)
-pop_barchart.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+def life_Exp_by_continent(df):
+    lifeExp_df=pd.DataFrame(df[df['year']==2007].groupby(['continent'],as_index=False)['lifeExp'].mean()).sort_values(by=['lifeExp'], ascending=True)
+    lifeExp_df=lifeExp_df.round(2)
+    fig=px.bar(lifeExp_df,x='continent',y='lifeExp',text='lifeExp',color='lifeExp',height=350,title='Life Expectancy (2007)')
+    fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=30,b=0,l=0,r=0))
+    return fig
+    
+def population_distribution(df):
+    df=pd.DataFrame(df[df['year']==2007].groupby(['continent'],as_index=False)['pop'].sum())
+    df=df.round(2)
+    colors=['crimson','teal','skyblue','orange','green']
+    fig = go.Figure(data=[go.Pie(labels=df['continent'].tolist(), values=df['pop'].tolist(), hole=.3)])
+    fig.update_layout(title={'text': 'Population Distribution','y':0.9,'x':0.5, 'xanchor': 'center','yanchor': 'top'},
+        showlegend=False,autosize=True,annotations=[dict(text='Pop.',  font_size=20, showarrow=False)],margin=dict(t=50,b=0,l=0,r=0),
+        height=350,colorway=colors)
+    return fig
 
-# donought pie chart with text at center
-doughnut_pie_chart_with_center = go.Figure(data=[go.Pie(labels=df2['continent'].tolist(), values=df2['pop'].tolist(), hole=.3)])
-doughnut_pie_chart_with_center.update_layout(showlegend=False,autosize=True,annotations=[dict(text='continent',  font_size=20, showarrow=False)],margin=dict(t=0,b=0,l=0,r=0),height=350)
+def population_growth(df):
+    pop_df=pd.DataFrame(df[df['year']==2007].groupby(['continent'],as_index=False)['pop'].sum())
+    pop_df=pop_df.round(2)
+    pop_df=pop_df.sort_values(by=['pop'], ascending=True)
+    colors=['teal']
+    fig=px.bar(pop_df,y='continent',x='pop',text='pop',height=350,color_discrete_sequence=colors, title='Absolute Population (2007)')
+    fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01),autosize=True,margin=dict(t=30,b=0,l=0,r=0))
+    return fig
 
-# linegraph
-life_exp_linegraph = px.line(yearly_lifeExp_df, x="year", y="lifeExp",color='continent',height=350)
-life_exp_linegraph.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=0,b=0,l=0,r=0))
+def population_trend(df):
+    yearly_pop_df=pd.DataFrame(df.groupby(['year','continent'],as_index=False)['pop'].sum()).sort_values(by=['pop'], ascending=True)
+    yearly_pop_df=yearly_pop_df.round(2)
+    colors=['crimson','teal','skyblue','orange','green']
+    fig = px.line(yearly_pop_df, x="year", y="pop",color='continent',height=350,color_discrete_sequence=colors,title='Population Growth Trend')
+    fig.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=30,b=0,l=0,r=0))
+    return fig
 
-# line and bar
-# Create figure with secondary y-axis
-line_bar_pop_gdp = make_subplots(specs=[[{"secondary_y": True}]])
-line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"], name="life expectancy"), secondary_y=False)
-line_bar_pop_gdp.add_trace(go.Scatter(x=yearly_pop_df["year"], y=yearly_pop_df["pop"], name="population"), secondary_y=True)
-line_bar_pop_gdp.update_layout(legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.01,orientation="h"),autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
+def gdp_lifeExp_distribution(df):
+    yearly_avg_lifeExp_df=pd.DataFrame(df.groupby(['year'],as_index=False)['lifeExp'].mean())
+    yearly_avg_gdp_df=pd.DataFrame(df.groupby(['year'],as_index=False)['gdpPercap'].mean())
+    yearly_avg_lifeExp_df=yearly_avg_lifeExp_df.round(2)
+    yearly_avg_gdp_df=yearly_avg_gdp_df.round(2)
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(go.Scatter(x=yearly_avg_lifeExp_df["year"], y=yearly_avg_lifeExp_df["lifeExp"], name="Life Expectancy"), secondary_y=False)
+    fig.add_trace(go.Scatter(x=yearly_avg_gdp_df["year"], y=yearly_avg_gdp_df["gdpPercap"], name="GDP Per Capita"), secondary_y=True)
+    fig.update_layout(title={'text': 'GDP Per Capita & Life Expectancy Trend','y':0.9,'x':0.5, 'xanchor': 'center','yanchor': 'top'},
+        legend=dict(yanchor="top",y=0.85,xanchor="left",x=0.01,orientation="v"),autosize=True,margin=dict(t=30,b=0,l=0,r=0),height=350)
+    return fig
+
+def life_expectancy_geo(df):
+    df=df[df['year']==2007]
+    fig = px.choropleth(df, locations="iso_alpha",
+                    color="lifeExp", 
+                    hover_name="country", 
+                    color_continuous_scale=px.colors.diverging.BrBG,
+                    title="Life Expectancy Geo (2007)") 
+    return fig
 
 # cards
-avg_gdp_per_capita=round(df2[df2['year']==2007]['gdpPercap'].mean(),2)
-avg_life_exp=round(df2[df2['year']==2007]['lifeExp'].mean(),2)
-total_population=round(df2[df2['year']==2007]['pop'].sum()/1000000000,2)
-countries_analysed=df2[df2['year']==2007].groupby(['country'])['country'].nunique().sum()
+avg_gdp_per_capita=round(df[df['year']==2007]['gdpPercap'].mean(),2)
+avg_life_exp=round(df[df['year']==2007]['lifeExp'].mean(),2)
+total_population=round(df[df['year']==2007]['pop'].sum()/1000000000,2)
+countries_analysed=df[df['year']==2007].groupby(['country'])['country'].nunique().sum()
 
-#boxplot
-gdp_boxplot = px.box(df2, x="year",y="lifeExp",height=350)
-gdp_boxplot.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0))
-
-# table
-table_graph = go.Figure(data=[go.Table(header=dict(values=list(df3.columns),fill_color='paleturquoise',
-                align='left'),cells=dict(values=[df3.year, df3.iso_alpha, df3.lifeExp, df3.gdpPercap],
-               fill_color='lavender',align='left'))])
-table_graph.update_layout(showlegend=False,autosize=True,margin=dict(t=0,b=0,l=0,r=0),height=350)
 
 
 # card definition
@@ -164,8 +192,8 @@ layout=dbc.Container([
             [
                 dbc.Col(html.Div(
                 	  dcc.Graph(
-		    id='grouped-bar-graph',
-		    figure=grouped_barchart,
+		    id='gdp-per-capita-by-continent',
+		    figure=gdp_per_capita_by_continent(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
@@ -173,17 +201,17 @@ layout=dbc.Container([
    #2.
             dbc.Col(html.Div(
             	dcc.Graph(
-		    id='barchart',
-		    figure=barchart,
+		    id='life-Exp-by-continent',
+		    figure=life_Exp_by_continent(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
                 	md=4),
-   #3. doughnut_pie_chart_with_center
+   #3. population_growth
                 dbc.Col(html.Div(
                 dcc.Graph(
-		    id='doughnut_pie_chart_with_center',
-		    figure=doughnut_pie_chart_with_center,
+		    id='population_growth',
+		    figure=population_distribution(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
@@ -199,8 +227,8 @@ layout=dbc.Container([
                 dbc.Col(html.Div(
 
                 dcc.Graph(
-		    id='life_exp_linegraph',
-		    figure=life_exp_linegraph,
+		    id='population-trend',
+		    figure=population_trend(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
@@ -211,8 +239,8 @@ layout=dbc.Container([
            dbc.Col(html.Div(
 
                 dcc.Graph(
-		    id='pop_barchart',
-		    figure=pop_barchart,
+		    id='population-growth',
+		    figure=population_growth(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
@@ -226,38 +254,28 @@ layout=dbc.Container([
             [
                 dbc.Col(html.Div(
  			dcc.Graph(
-		    id='line_bar_pop_gdp',
-		    figure=line_bar_pop_gdp,
+		    id='gdp-lifeExp-distribution',
+		    figure=gdp_lifeExp_distribution(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
 
-                	md=4),
+                	md=5),
 
 	#7.  
                 dbc.Col(html.Div(
-
-             dcc.Graph(
-		    id='gdp_boxplot',
-		    figure=gdp_boxplot,
-		    config={'displayModeBar': False }
-		    )
-                	),
-
-                	md=4),
-    #8.
-                dbc.Col(html.Div(
                    dcc.Graph(
-		    id='table_graph',
-		    figure=table_graph,
+		    id='life-expectancy-geo',
+		    figure=life_expectancy_geo(df),
 		    config={'displayModeBar': False }
 		    )
                 	),
                 
-                	md=4),
+                	md=7),
             ]
         ),
 
+     
         # footer
  		dbc.Row(
             [
