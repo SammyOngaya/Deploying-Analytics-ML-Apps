@@ -1,5 +1,8 @@
-# import pandas_datareader.data as web
+import pandas_datareader.data as web
 import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 import pandas as pd
 
 import dash
@@ -22,21 +25,16 @@ import datetime
 from app import app
 
 
-# Data scraping
-# https://pandas-datareader.readthedocs.io/en/latest/remote_data.html#remote-data-stooq
-# start = datetime.datetime(2020,1,1)
-# end=datetime.datetime(2020,12,3)
-# df=web.DataReader(['AMZN','GOOGL','FB'], 'stooq',start=start,end=end)
-# df=df.stack().reset_index()
-# # df.unstack().reset_index()
-# print(df.head())
-# df.to_csv("stock.csv",index=False)
 
-PATH=pathlib.Path(__file__).parent
-DATA_PATH=PATH.joinpath("../datasets").resolve()
+# Scrap real data
+start = date.today() + relativedelta(months=-12)
+end=datetime.date.today()
+df=web.DataReader(['AMZN','GOOGL','FB'], 'stooq',start=start,end=end)
+df=df.stack().reset_index()
+df.unstack().reset_index()
+df.columns=['Date','Organization','Close','High','Low','Open','Volume']
+# end data scraping
 
-
-df=pd.read_csv(DATA_PATH.joinpath("stock.csv"))
 df['year_month']=pd.to_datetime(df['Date']).dt.strftime('%Y-%m')
 
 
@@ -64,7 +62,7 @@ layout=dbc.Container([
 		dbc.Col([
 
 			dcc.Dropdown(id='my-dpdn', multi=False, value='AMZN',
-			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			options=[{'label':x,'value':x} for x in sorted(df['Organization'].unique())],
 			style={'margin-bottom': '15px'}),
 
 			dbc.Select(
@@ -96,8 +94,8 @@ layout=dbc.Container([
 	        ],style={'margin-bottom': '5px'}	          
 	          ),
 
-			dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Symbols'].unique(),
-			options=[{'label':x,'value':x} for x in sorted(df['Symbols'].unique())],
+			dcc.Dropdown(id='my-dpdn2',multi=True, value=df['Organization'].unique(),
+			options=[{'label':x,'value':x} for x in sorted(df['Organization'].unique())],
 			style={'margin-bottom': '10px'}),
 
 			dcc.Dropdown(id='year-dropdown', multi=True, 
@@ -109,7 +107,7 @@ layout=dbc.Container([
                 options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'},
-                style={'margin-bottom': '2px'})
+                style={'margin-bottom': '2px'}),
 		],
 		md=3,
 		style={'margin-bottom': '2px','margin-top': '2px','margin-left': '0px','border-style': 'solid','border-color': 'green'}
@@ -183,7 +181,7 @@ Input('my-dpdn', 'value'),
 Input('year-dropdown', 'value')
 )
 def update_graph(stock_slctd,date_selected):
-	dff=df[df['Symbols'].isin([stock_slctd]) & df['year_month'].isin(date_selected)]
+	dff=df[df['Organization'].isin([stock_slctd]) & df['year_month'].isin(date_selected)]
 	fig=go.Figure()
 	fig.add_trace(go.Scatter(x=dff['Date'], y=dff['High'], name='High',line = dict(color='green'))) #dash='dash' to add line style
 	fig.add_trace(go.Scatter(x=dff['Date'], y=dff['Low'], name='Low',line = dict(color='firebrick')))
@@ -212,8 +210,8 @@ Input('xlog_multi_type', 'value'),
 Input('year-dropdown', 'value'),
 prevent_initial_call=False)
 def update_multi_graph(multi_stock_slctd,xlog_multi_type,date_selected):
-	dff=df[df['Symbols'].isin(multi_stock_slctd) & df['year_month'].isin(date_selected)]	
-	figln=px.line(dff,x='Date', y='High',color='Symbols',height=400)
+	dff=df[df['Organization'].isin(multi_stock_slctd) & df['year_month'].isin(date_selected)]	
+	figln=px.line(dff,x='Date', y='High',color='Organization',height=400)
 	figln.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
 	figln.update_xaxes(rangeslider_visible=False,
     rangeselector=dict(
@@ -236,10 +234,12 @@ Input('my-dpdn2', 'value'),
 Input('year-dropdown', 'value'),
 Input('xlog_multi_type', 'value'),
 prevent_initial_call=False)
-def update_stackedbar_graph(multi_stock_slctd,date_selected,xlog_multi_type):
-	stock_stacked_df=pd.DataFrame(df.groupby(['year_month','Symbols'],as_index=False)['High'].mean()) #.sort_values(by=['gdpPercap'], ascending=True)
-	dff=stock_stacked_df[stock_stacked_df['Symbols'].isin(multi_stock_slctd) & stock_stacked_df['year_month'].isin(date_selected)]	
-	stacked_barchart=px.bar(dff,x='year_month',y='High',color='Symbols',text='High',height=400)
+def stock_distribution(multi_stock_slctd,date_selected,xlog_multi_type):
+	stock_stacked_df=pd.DataFrame(df.groupby(['year_month','Organization'],as_index=False)['High'].mean()) #.sort_values(by=['gdpPercap'], ascending=True)
+	dff=stock_stacked_df[stock_stacked_df['Organization'].isin(multi_stock_slctd) & stock_stacked_df['year_month'].isin(date_selected)]	
+	dff=dff.round(2)
+	colors=['teal','skyblue','orange']
+	stacked_barchart=px.bar(dff,x='year_month',y='High',color='Organization',text='High',height=400,color_discrete_sequence=colors)
 	stacked_barchart.update_yaxes(type='linear' if xlog_multi_type == 'Linear' else 'log')
 	stacked_barchart.update_xaxes(rangeslider_visible=False,
     rangeselector=dict(
