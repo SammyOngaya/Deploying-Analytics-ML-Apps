@@ -31,10 +31,10 @@ DATA_PATH=PATH.joinpath("../datasets").resolve()
 # df=pd.read_csv(DATA_PATH.joinpath("tweets.csv"))
 
 # Connection credentials
-consumer_key= 'NFIO7bIgwQpdCZ7p7rgewKXss'
-consumer_secret= '2QegNrIpcGCW6nCWFTL5JEsrDCmYZpQHJ8SdIT7V0ql5cQgFwV'
-access_token= '3049227557-36ln3qak9xbxHvgNos45cf3uScGxuUdaDAR4vqs'
-access_token_secret= 'pZ4Y0p31graKrAYAy41mYztvIrYFzof7awiTDWQr2ui9u'
+consumer_key= 'NFIO7bIgwQpdCZKXss'
+consumer_secret= '2QegNrIpcGCW6nCWFTL5JEsrDCmYZpQHwV'
+access_token= '3049227557-36ln3qak9xbxHvAR4vqs'
+access_token_secret= 'pZ4Y0p31graKzof7awiTDWQr2ui9u'
 # End connection credentials
 
 # Define the AUTHHandler
